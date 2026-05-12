@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +6,7 @@ public class PlayerMove : MonoBehaviour
 {
     private CharacterController ch_Controller;
     private PlayerBehavior playerBehavior;
-    private GetWeapon getWeapon;
+    private WeaponManager weaponManager;
 
     private float gravity = -9.8f;
 
@@ -20,12 +19,13 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jump")]
     private float jumpTimer = 0f;
+
     [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float endJumpAnimTime = 1.5f;
-    private float startJumpAnimTime;
     [SerializeField] private float timeBetweenJump = 0.5f;
     [SerializeField] private float initialJumpAnimTime;
+
+    private float startJumpAnimTime;
 
     [Header("Slide")]
     [SerializeField] private AnimationCurve slideSlowCurve;
@@ -45,48 +45,47 @@ public class PlayerMove : MonoBehaviour
     [Header("LongIdle")]
     [SerializeField] private float longIdleTime = 15f;
 
-    private float longIdleTimer = 0f;
+    [Header("Dash")]
+    [SerializeField] private float dashDuration = 1f;
+    [SerializeField] private float dashSpeed = 7f;
+
+    [Header("Layers")]
+    [SerializeField] private LayerMask ceilingLayer;
 
     private Vector3 playerVelocity;
+    private Vector3 slideVelocity;
+    private Vector3 dashDirection;
+
     private float verticalVelocity;
+    private float longIdleTimer = 0f;
+    private float slidenTime = 0f;
+    private float slideVelocityFactor = 1f;
+    private float dashTime;
 
     private bool isJumping;
     private bool walking = false;
     private bool waitingForJumpAnim = false;
     private bool endJump = true;
 
-    public bool canLongIddle;
-
     private bool isCrouched = false;
     private bool tryingToStand = false;
 
-    [Header("Dash")]
-    private bool isDashing = false;
-    private float dashTime;
-
-    [SerializeField] private float dashDuration = 1f;
-    [SerializeField] private float dashSpeed = 7f;
-
-    private Vector3 dashDirection;
-
-    private Vector3 slideVelocity;
-    private float slidenTime = 0f;
-    private float slideVelocityFactor = 1f;
     private bool sliding = false;
     private bool isInWater = false;
+    private bool isDashing = false;
+
+    public bool canLongIddle;
 
     private static readonly int Jump = Animator.StringToHash("jump");
     private static readonly int ZSpeed = Animator.StringToHash("zSpeed");
     private static readonly int XSpeed = Animator.StringToHash("xSpeed");
     private static readonly int Crouched = Animator.StringToHash("crouched");
 
-    [SerializeField] private LayerMask ceilingLayer;
-
     private void Start()
     {
         ch_Controller = GetComponent<CharacterController>();
         playerBehavior = GetComponent<PlayerBehavior>();
-        getWeapon = GetComponent<GetWeapon>();
+        weaponManager = GetComponent<WeaponManager>();
     }
 
     private void Update()
@@ -99,21 +98,17 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        if (walking)
-        {
-            startJumpAnimTime = 0;
-        }
-        else
-        {
-            startJumpAnimTime = initialJumpAnimTime;
-        }
+        startJumpAnimTime =
+            walking ? 0 : initialJumpAnimTime;
 
         UpdatePlayerVelocity();
         DoJump();
         UpdateSlideVelocity();
         ApplyVelocity();
 
-        if (!getWeapon.hasPistol || !getWeapon.hasLargeWeapon)
+        // SOLO bloquear crouch con armas pesadas
+        if (weaponManager == null ||
+            !weaponManager.IsHeavyWeaponEquipped)
         {
             HandleCrouch();
         }
@@ -135,11 +130,16 @@ public class PlayerMove : MonoBehaviour
     {
         if (!canLongIddle) return;
 
-        if (playerVelocity.sqrMagnitude > 0.01f || isJumping || isDashing || isCrouched)
+        if (playerVelocity.sqrMagnitude > 0.01f ||
+            isJumping ||
+            isDashing ||
+            isCrouched)
         {
             longIdleTimer = 0f;
+
             playerBehavior.Animator.SetBool("longIdle", false);
             playerBehavior.Animator.SetBool("movement", true);
+
             return;
         }
 
@@ -154,14 +154,17 @@ public class PlayerMove : MonoBehaviour
 
     private void ApplyVelocity()
     {
-        Vector3 horizontalVelocity = playerVelocity + slideVelocity;
+        Vector3 horizontalVelocity =
+            playerVelocity + slideVelocity;
 
         if (!isInWater)
         {
             horizontalVelocity *= slideVelocityFactor;
         }
 
-        Vector3 totalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
+        Vector3 totalVelocity =
+            horizontalVelocity +
+            Vector3.up * verticalVelocity;
 
         ch_Controller.Move(totalVelocity * Time.deltaTime);
     }
@@ -185,18 +188,13 @@ public class PlayerMove : MonoBehaviour
     {
         Vector2 movementInput = Vector2.zero;
 
-        if (Keyboard.current != null)
-        {
-            if (Keyboard.current.wKey.isPressed) movementInput.y += 1;
-            if (Keyboard.current.sKey.isPressed) movementInput.y -= 1;
-            if (Keyboard.current.aKey.isPressed) movementInput.x -= 1;
-            if (Keyboard.current.dKey.isPressed) movementInput.x += 1;
-        }
+        if (Keyboard.current.wKey.isPressed) movementInput.y += 1;
+        if (Keyboard.current.sKey.isPressed) movementInput.y -= 1;
+        if (Keyboard.current.aKey.isPressed) movementInput.x -= 1;
+        if (Keyboard.current.dKey.isPressed) movementInput.x += 1;
 
-        float xInput = movementInput.x;
-        float zInput = movementInput.y;
-
-        Vector3 vectorInput = new Vector3(xInput, 0, zInput);
+        Vector3 vectorInput =
+            new Vector3(movementInput.x, 0, movementInput.y);
 
         walking = vectorInput.sqrMagnitude > 0.01f;
 
@@ -208,7 +206,6 @@ public class PlayerMove : MonoBehaviour
         if (isCrouched)
         {
             currentSpeed = crouchSpeed;
-            walking = false;
         }
         else if (isInWater)
         {
@@ -216,32 +213,24 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            if (Keyboard.current.leftShiftKey.isPressed)
-            {
-                currentSpeed = runSpeed;
-            }
-            else
-            {
-                currentSpeed = normalSpeed;
-            }
+            currentSpeed =
+                Keyboard.current.leftShiftKey.isPressed
+                ? runSpeed
+                : normalSpeed;
         }
 
-        Vector3 localPlayerVelocity =
-            new Vector3(vectorInput.x * currentSpeed, 0, vectorInput.z * currentSpeed);
+        Vector3 localVelocity =
+            new Vector3(
+                vectorInput.x * currentSpeed,
+                0,
+                vectorInput.z * currentSpeed
+            );
 
-        playerVelocity = transform.TransformVector(localPlayerVelocity);
+        playerVelocity =
+            transform.TransformVector(localVelocity);
 
-        if (isInWater && !playerBehavior.Animator.GetBool("inWater"))
-        {
-            playerBehavior.Animator.SetBool("inWater", true);
-        }
-        else if (!isInWater && playerBehavior.Animator.GetBool("inWater"))
-        {
-            playerBehavior.Animator.SetBool("inWater", false);
-        }
-
-        playerBehavior.Animator.SetFloat(ZSpeed, localPlayerVelocity.z);
-        playerBehavior.Animator.SetFloat(XSpeed, localPlayerVelocity.x);
+        playerBehavior.Animator.SetFloat(ZSpeed, localVelocity.z);
+        playerBehavior.Animator.SetFloat(XSpeed, localVelocity.x);
     }
 
     private void DoJump()
@@ -268,7 +257,9 @@ public class PlayerMove : MonoBehaviour
             StartCoroutine(JumpCoroutine());
         }
 
-        if (ch_Controller.isGrounded && !endJump && !isJumping)
+        if (ch_Controller.isGrounded &&
+            !endJump &&
+            !isJumping)
         {
             endJump = true;
             jumpTimer = 0;
@@ -300,11 +291,12 @@ public class PlayerMove : MonoBehaviour
         waitingForJumpAnim = false;
     }
 
-    void UpdateSlideVelocity()
+    private void UpdateSlideVelocity()
     {
         RaycastHit hitInfo;
 
-        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
+        Vector3 rayOrigin =
+            transform.position + Vector3.up * 0.1f;
 
         bool hit = Physics.Raycast(
             rayOrigin,
@@ -314,7 +306,8 @@ public class PlayerMove : MonoBehaviour
 
         if (ch_Controller.isGrounded && hit)
         {
-            float angle = Vector3.Angle(hitInfo.normal, Vector3.up);
+            float angle =
+                Vector3.Angle(hitInfo.normal, Vector3.up);
 
             if (angle > slideSlope)
             {
@@ -326,58 +319,60 @@ public class PlayerMove : MonoBehaviour
                 }
 
                 Vector3 slideDir =
-                    Vector3.ProjectOnPlane(Vector3.down, hitInfo.normal).normalized;
+                    Vector3.ProjectOnPlane(
+                        Vector3.down,
+                        hitInfo.normal
+                    ).normalized;
 
-                Vector3 targetSlide = slideDir * slideSpeed;
+                Vector3 targetSlide =
+                    slideDir * slideSpeed;
 
-                targetSlide = Vector3.ClampMagnitude(targetSlide, maxSlideVelocity);
+                targetSlide =
+                    Vector3.ClampMagnitude(
+                        targetSlide,
+                        maxSlideVelocity);
 
-                if (slidenTime < 0.1f)
-                {
-                    slideVelocity = targetSlide;
-                }
-                else
-                {
-                    slideVelocity =
-                        Vector3.Lerp(slideVelocity, targetSlide, Time.deltaTime * 5f);
-                }
+                slideVelocity =
+                    Vector3.Lerp(
+                        slideVelocity,
+                        targetSlide,
+                        Time.deltaTime * 5f);
             }
             else
             {
-                if (sliding)
-                {
-                    slideVelocity =
-                        Vector3.Lerp(slideVelocity, Vector3.zero, Time.deltaTime * 10f);
+                slideVelocity =
+                    Vector3.Lerp(
+                        slideVelocity,
+                        Vector3.zero,
+                        Time.deltaTime * 10f);
 
-                    if (slideVelocity.magnitude < 0.1f)
-                    {
-                        sliding = false;
-                        slidenTime = 0f;
-                        slideVelocity = Vector3.zero;
-                    }
+                if (slideVelocity.magnitude < 0.1f)
+                {
+                    sliding = false;
+                    slideVelocity = Vector3.zero;
                 }
             }
-        }
-        else
-        {
-            sliding = false;
-            slidenTime = 0f;
-            slideVelocity = Vector3.zero;
         }
 
         if (sliding)
         {
             slidenTime += Time.deltaTime;
 
-            float t = Mathf.Clamp01(slidenTime / slideDownTime);
+            float t =
+                Mathf.Clamp01(slidenTime / slideDownTime);
 
             slideVelocityFactor =
-                Mathf.Max(0.4f, slideSlowCurve.Evaluate(t));
+                Mathf.Max(
+                    0.4f,
+                    slideSlowCurve.Evaluate(t));
         }
         else
         {
             slideVelocityFactor =
-                Mathf.Lerp(slideVelocityFactor, 1f, Time.deltaTime * 10f);
+                Mathf.Lerp(
+                    slideVelocityFactor,
+                    1f,
+                    Time.deltaTime * 10f);
         }
     }
 
@@ -386,7 +381,8 @@ public class PlayerMove : MonoBehaviour
         isCrouched = true;
 
         ch_Controller.height = crouchHeight;
-        ch_Controller.center = new Vector3(0, crouchCenter, 0);
+        ch_Controller.center =
+            new Vector3(0, crouchCenter, 0);
 
         playerBehavior.Animator.SetInteger(Crouched, 1);
 
@@ -406,9 +402,11 @@ public class PlayerMove : MonoBehaviour
     {
         RaycastHit hitInfo;
 
-        float checkDistance = standHeight - crouchHeight;
+        float checkDistance =
+            standHeight - crouchHeight;
 
-        Vector3 start = transform.position + Vector3.up * crouchHeight;
+        Vector3 start =
+            transform.position + Vector3.up * crouchHeight;
 
         return !Physics.SphereCast(
             start,
@@ -422,11 +420,15 @@ public class PlayerMove : MonoBehaviour
     private void StandUp()
     {
         ch_Controller.height = standHeight;
-        ch_Controller.center = new Vector3(0, standCenter, 0);
+
+        ch_Controller.center =
+            new Vector3(0, standCenter, 0);
 
         playerBehavior.Animator.SetInteger(Crouched, 2);
 
         isCrouched = false;
+
+        StartCoroutine(ResetCrouchState());
     }
 
     private IEnumerator ResetCrouchState()
@@ -456,7 +458,9 @@ public class PlayerMove : MonoBehaviour
         playerBehavior.Animator.SetFloat(ZSpeed, dashSpeed);
 
         ch_Controller.Move(
-            dashDirection * dashSpeed * Time.deltaTime);
+            dashDirection *
+            dashSpeed *
+            Time.deltaTime);
 
         if (dashTime >= dashDuration)
         {

@@ -457,6 +457,10 @@ PrefabInstance:
       propertyPath: ammunitionBar
       value: 
       objectReference: {fileID: 636483720}
+    - target: {fileID: 88148422134524995, guid: c1c8d03bc683260409def09137ab8eec, type: 3}
+      propertyPath: crosshairImage
+      value: 
+      objectReference: {fileID: 1216158716}
     - target: {fileID: 955733630733182028, guid: c1c8d03bc683260409def09137ab8eec, type: 3}
       propertyPath: buttonIcon
       value: 
@@ -525,7 +529,17 @@ PrefabInstance:
       propertyPath: gameOverMenu
       value: 
       objectReference: {fileID: 636483719}
-    m_RemovedComponents: []
+    - target: {fileID: 8798815936119500219, guid: c1c8d03bc683260409def09137ab8eec, type: 3}
+      propertyPath: longWeaponController
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9183938958251082464, guid: c1c8d03bc683260409def09137ab8eec, type: 3}
+      propertyPath: crosshairImage
+      value: 
+      objectReference: {fileID: 1216158716}
+    m_RemovedComponents:
+    - {fileID: 955733630733182028, guid: c1c8d03bc683260409def09137ab8eec, type: 3}
+    - {fileID: 88148422134524995, guid: c1c8d03bc683260409def09137ab8eec, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -590,6 +604,11 @@ PrefabInstance:
 --- !u!1 &1195828479 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4110362677048578429, guid: 80f4bbbd671c73a4b94581334c98042d, type: 3}
+  m_PrefabInstance: {fileID: 636483717}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1216158716 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2595425871446402006, guid: 80f4bbbd671c73a4b94581334c98042d, type: 3}
   m_PrefabInstance: {fileID: 636483717}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1384165707 stripped

@@ -21,8 +21,8 @@ public class AimStateManager : MonoBehaviour
     [SerializeField] private CinemachineCamera mainCamera;
     [SerializeField] private CinemachineCamera droneCamera;
 
-    [Header("Drone Settings")]
-    [SerializeField] private GameObject droneObject;
+    //[Header("Drone Settings")]
+    //[SerializeField] private GameObject droneObject;
 
     private bool isDroneCameraActive = false;
 
@@ -41,10 +41,10 @@ public class AimStateManager : MonoBehaviour
             droneCamera.Priority = 0;
 
         // Desactivar drone al inicio
-        if (droneObject != null)
+       /* if (droneObject != null)
         {
             droneObject.SetActive(false);
-        }
+        }*/
     }
 
     void Update()
@@ -93,10 +93,10 @@ public class AimStateManager : MonoBehaviour
             droneCamera.Priority = isDroneCameraActive ? 10 : 0;
 
         // Activar/desactivar drone
-        if (droneObject != null)
+      /*  if (droneObject != null)
         {
             droneObject.SetActive(isDroneCameraActive);
-        }
+        }*/
 
         // Desactivar movimiento del jugador cuando el drone está activo
         PlayerMove playerMove = GetComponent<PlayerMove>();
