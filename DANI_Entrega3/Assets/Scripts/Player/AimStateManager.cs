@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Cinemachine;
-using UnityEngine.InputSystem;
 
 public class AimStateManager : MonoBehaviour
 {
     private PlayerBehavior playerBehavior;
-
+    public string xAxisInput = "Mouse X";
+    public string yAxisInput = "Mouse Y";
     public Transform camFollowPos;
-    public bool robotFound = false;
+    /*public bool robotFound = false;
+    public GameObject modelrobot;
+    public GameObject dialogue;
+    public CheckInteraction checkinteraction;*/
 
     [Header("Smooth Settings")]
     [SerializeField] private float smoothSpeed = 10f;
@@ -20,55 +23,46 @@ public class AimStateManager : MonoBehaviour
     [Header("Cameras")]
     [SerializeField] private CinemachineCamera mainCamera;
     [SerializeField] private CinemachineCamera droneCamera;
+    [SerializeField] private KeyCode switchCameraKey = KeyCode.E;
 
-    //[Header("Drone Settings")]
-    //[SerializeField] private GameObject droneObject;
-
+    [Header("Drone Settings")]
+    [SerializeField] private GameObject droneObject;
     private bool isDroneCameraActive = false;
 
     void Awake()
     {
         playerBehavior = GetComponent<PlayerBehavior>();
-
         currentXRotation = transform.eulerAngles.y;
         currentYRotation = camFollowPos.localEulerAngles.x;
 
-        // Activar cámara principal al inicio
-        if (mainCamera != null)
-            mainCamera.Priority = 10;
+        mainCamera.Priority = 10;
+        droneCamera.Priority = 0;
 
-        if (droneCamera != null)
-            droneCamera.Priority = 0;
-
-        // Desactivar drone al inicio
-       /* if (droneObject != null)
+        if (droneObject != null)
         {
             droneObject.SetActive(false);
-        }*/
+        }
     }
 
     void Update()
     {
-        if (playerBehavior == null || playerBehavior.IsDead)
-            return;
-
-        // Tecla E para cambiar cámara
-        if (Keyboard.current.eKey.wasPressedThisFrame && robotFound)
+        if (playerBehavior == null || playerBehavior.IsDead) return;
+       /* if (checkinteraction.interactionStarted) 
+        { 
+            robotFound = true;
+            Destroy(modelrobot);
+            
+        }
+        if (Input.GetKeyDown(switchCameraKey) && robotFound)
         {
             ToggleCamera();
-        }
+        }*/
     }
 
     private void LateUpdate()
     {
-        if (playerBehavior == null || playerBehavior.IsDead)
-            return;
-
-        // Solo rotar si NO estamos usando la cámara del drone
-        if (!isDroneCameraActive)
-        {
-            SmoothRotate(camFollowPos);
-        }
+        if (playerBehavior == null || playerBehavior.IsDead) return;
+        SmoothRotate(camFollowPos);
     }
 
     public void ShootCamera()
@@ -84,44 +78,33 @@ public class AimStateManager : MonoBehaviour
     private void ToggleCamera()
     {
         isDroneCameraActive = !isDroneCameraActive;
+        mainCamera.Priority = isDroneCameraActive ? 0 : 10;
+        droneCamera.Priority = isDroneCameraActive ? 10 : 0;
 
-        // Cambiar prioridades de cámaras
-        if (mainCamera != null)
-            mainCamera.Priority = isDroneCameraActive ? 0 : 10;
-
-        if (droneCamera != null)
-            droneCamera.Priority = isDroneCameraActive ? 10 : 0;
-
-        // Activar/desactivar drone
-      /*  if (droneObject != null)
+        if (droneObject != null)
         {
             droneObject.SetActive(isDroneCameraActive);
-        }*/
+        }
 
-        // Desactivar movimiento del jugador cuando el drone está activo
+        // Desactivar PlayerMove si la cámara principal no está activa
         PlayerMove playerMove = GetComponent<PlayerMove>();
-
         if (playerMove != null)
         {
             playerMove.enabled = !isDroneCameraActive;
         }
     }
 
+
     private void SmoothRotate(Transform location)
     {
-        // Leer movimiento del mouse usando el nuevo Input System
-        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
-
-        float mouseX = mouseDelta.x * smoothSpeed * Time.deltaTime;
-        float mouseY = mouseDelta.y * smoothSpeed * Time.deltaTime;
+        float mouseX = Input.GetAxis(xAxisInput) * smoothSpeed * Time.deltaTime;
+        float mouseY = Input.GetAxis(yAxisInput) * smoothSpeed * Time.deltaTime;
 
         currentXRotation += mouseX;
         currentYRotation -= mouseY;
 
-        // Limitar rotación vertical
         currentYRotation = Mathf.Clamp(currentYRotation, -15f, 15f);
 
-        // Aplicar rotaciones
         location.localRotation = Quaternion.Euler(currentYRotation, 0f, 0f);
         transform.rotation = Quaternion.Euler(0f, currentXRotation, 0f);
     }
