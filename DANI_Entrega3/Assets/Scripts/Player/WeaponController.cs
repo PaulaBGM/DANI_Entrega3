@@ -3,13 +3,31 @@ using UnityEngine;
 
 public class WeaponController : Weapon
 {
+    [Header("References")]
     [SerializeField] private AimStateManager aimState;
+    [SerializeField] private AmmunitionManager ammoManager;
+    [SerializeField] private Camera cachedCamera;
+
+    [Header("Projectiles")]
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private GameObject particles;
+    //[SerializeField] private GameObject grenadePrefab;
+
+    [Header("Effects")]
+   // [SerializeField] private ParticleSystem muzzleParticles;
+
+    [Header("Spawn")]
     [SerializeField] private Transform shootSpawn;
-    [SerializeField] private float rifleFireRate = 0.2f; // Tiempo base entre disparos
-    [SerializeField] private float pistolFireRate = 0.5f; // La pistola tarda el doble
-    private float lastShootTime = 0f;
+
+    [Header("Fire Rates")]
+    [SerializeField] private float rifleFireRate = 0.15f;
+    [SerializeField] private float pistolFireRate = 0.4f;
+    [SerializeField] private float grenadeFireRate = 1.2f;
+
+    /*[Header("Knife")]
+    [SerializeField] private float knifeRange = 2f;
+    [SerializeField] private int knifeDamage = 25;
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private Animator animator;*/
 
     [Header("Camera")]
     [SerializeField] private GameObject crosshairImage;
@@ -18,33 +36,61 @@ public class WeaponController : Weapon
     [SerializeField] private Transform camFollowPos_Pistol;
     [SerializeField] private Transform camFollowPos_Normal;
 
-    public bool isShooting = false;
-    public bool isAiming = false;
-    private AmmunitionManager ammoManager;
     private Coroutine shootingCoroutine;
 
-    public WeaponType currentWeapon = WeaponType.Long; // Tipo de arma actual
+    private Transform cameraTransform;
+
+    private Ray ray;
+    private RaycastHit hit;
+
+    public WeaponType currentWeapon = WeaponType.Long;
+
+    private void Awake()
+    {
+        cameraTransform = cachedCamera.transform;
+    }
 
     private void Start()
     {
-        ammoManager = GetComponentInParent<AmmunitionManager>();
+        if (ammoManager == null)
+        {
+            ammoManager = GetComponentInParent<AmmunitionManager>();
+        }
     }
 
-    void Update()
+    private void Update()
     {
         HandleShooting();
         HandleAiming();
-        AlignShootSpawnWithCamera();
+
+        if (currentWeapon != WeaponType.Knife)
+        {
+            AlignShootSpawnWithCamera();
+        }
     }
 
-    void HandleShooting()
+    private void HandleShooting()
     {
+        if (currentWeapon == WeaponType.Knife)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                KnifeAttack();
+            }
+
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             if (shootingCoroutine == null)
-                shootingCoroutine = StartCoroutine(AutoFireCoroutine());
+            {
+                shootingCoroutine =
+                    StartCoroutine(AutoFireCoroutine());
+            }
         }
-        else if (Input.GetMouseButtonUp(0))
+
+        if (Input.GetMouseButtonUp(0))
         {
             if (shootingCoroutine != null)
             {
@@ -56,82 +102,150 @@ public class WeaponController : Weapon
 
     IEnumerator AutoFireCoroutine()
     {
+        WaitForSeconds waitRifle =
+            new WaitForSeconds(rifleFireRate);
+
+        WaitForSeconds waitPistol =
+            new WaitForSeconds(pistolFireRate);
+
+        WaitForSeconds waitGrenade =
+            new WaitForSeconds(grenadeFireRate);
+
         while (true)
         {
             TryShoot();
 
-            float fireRate = currentWeapon == WeaponType.Short
-                ? pistolFireRate
-                : rifleFireRate;
+            switch (currentWeapon)
+            {
+                case WeaponType.Short:
+                    yield return waitPistol;
+                    break;
 
-            yield return new WaitForSeconds(fireRate);
+                case WeaponType.GrenadeLauncher:
+                    yield return waitGrenade;
+                    break;
+
+                default:
+                    yield return waitRifle;
+                    break;
+            }
         }
     }
 
-    void HandleAiming()
+    private void HandleAiming()
     {
-        if (Input.GetMouseButton(1))
+        if (currentWeapon == WeaponType.Knife)
         {
-            isAiming = true;
+            crosshairImage.SetActive(false);
+            return;
+        }
+
+        bool aiming = Input.GetMouseButton(1);
+
+        crosshairImage.SetActive(aiming);
+
+        pistolCamera.SetActive(aiming);
+        normalCamera.SetActive(!aiming);
+
+        if (aiming)
+        {
             aimState.camFollowPos = camFollowPos_Pistol;
             aimState.ShootCamera();
-            crosshairImage.SetActive(true);
-            pistolCamera.SetActive(true);
-            normalCamera.SetActive(false);
         }
         else
         {
-            isAiming = false;
             aimState.camFollowPos = camFollowPos_Normal;
             aimState.NormalCamera();
-            crosshairImage.SetActive(false);
-            pistolCamera.SetActive(false);
-            normalCamera.SetActive(true);
         }
     }
 
-    void AlignShootSpawnWithCamera()
+    private void AlignShootSpawnWithCamera()
     {
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        Vector3 targetPoint;
-        int enemyLayer = LayerMask.NameToLayer("Enemy_Detector");
-        int layerMask = ~(1 << enemyLayer);
+        ray.origin = cameraTransform.position;
+        ray.direction = cameraTransform.forward;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out hit, 1000f))
         {
             targetPoint = hit.point;
-            Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red);
         }
         else
         {
-            targetPoint = ray.origin + ray.direction * 1000f;
-            Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.green);
+            targetPoint =
+                ray.origin + (ray.direction * 1000f);
         }
 
-        Debug.DrawLine(shootSpawn.position, targetPoint, Color.blue);
-
-        Vector3 shootDirection = (targetPoint - shootSpawn.position).normalized;
-        shootSpawn.rotation = Quaternion.LookRotation(shootDirection);
+        shootSpawn.forward =
+            (targetPoint - shootSpawn.position).normalized;
     }
 
-    void TryShoot()
+    private void TryShoot()
     {
-        if (ammoManager.UseAmmo(1)) // Asegúrate de que hay munición
+        if (!ammoManager.UseAmmo(1))
+            return;
+
+        switch (currentWeapon)
         {
-            InstantiateBullet();
-            lastShootTime = Time.time; // Actualiza el tiempo del último disparo
+            case WeaponType.Long:
+            case WeaponType.Short:
+                SpawnBullet();
+                break;
+
+            case WeaponType.GrenadeLauncher:
+                SpawnGrenade();
+                break;
         }
-        else
+
+       /* if (muzzleParticles != null)
         {
-            Debug.Log("No hay munición");
-        }
+            muzzleParticles.Play();
+        }*/
     }
 
-    void InstantiateBullet()
+    private void SpawnBullet()
     {
-        Instantiate(bulletPrefab, shootSpawn.position, shootSpawn.rotation);
-        GameObject particlesGO = Instantiate(particles, shootSpawn.position, shootSpawn.rotation);
-        Destroy(particlesGO, 0.2f); // Ajusta el tiempo al que dure tu efecto
+        Instantiate(
+            bulletPrefab,
+            shootSpawn.position,
+            shootSpawn.rotation
+        );
+    }
+
+    private void SpawnGrenade()
+    {
+      /*  Instantiate(
+            grenadePrefab,
+            shootSpawn.position,
+            shootSpawn.rotation
+        );*/
+    }
+
+    private void KnifeAttack()
+    {
+        /*if (animator != null)
+        {
+            animator.SetTrigger("Knife");
+        }*/
+
+        ray.origin = cameraTransform.position;
+        ray.direction = cameraTransform.forward;
+
+       /* if (Physics.Raycast(
+            ray,
+            out hit,
+            knifeRange,
+            enemyLayer,
+            QueryTriggerInteraction.Ignore))
+        {
+            EnemyHealth enemy;
+
+            if (hit.collider.TryGetComponent(
+                out enemy))
+            {
+                enemy.TakeDamage(knifeDamage);
+            }
+        }*/
     }
 
     public void SetWeaponType(WeaponType weapon)
