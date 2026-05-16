@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class DialogueManagerSo : ScriptableObject
 {
-    //Creamos una clase interna que represente a cada lÌnea del di·logo.
+    //Creamos una clase interna que represente a cada l√≠nea del di√°logo.
     [System.Serializable]
     public class DialogueLines
     {
         public string speakerName;
         [TextArea(3, 10)] public string lineText;
     }
-
+    
     public DialogueLines[] dialogueLines;
 }

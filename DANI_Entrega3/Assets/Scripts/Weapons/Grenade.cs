@@ -1,99 +1,92 @@
+using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class Grenade : MonoBehaviour
 {
-    [Header("Movement")]
-    [SerializeField] private float speed = 20f;
+    public ObjectPool<Grenade> GrenadePool {get; set;}
 
-    [Header("Explosion")]
-    [SerializeField] private float explosionRadius = 5f;
-    [SerializeField] private int maxDamage = 100;
+    private ObjectPool<ParticlesBehavior> grenadeParticlesPool;
+    
+    [SerializeField] private ParticlesBehavior grenadeParticlesPrefab;
 
-    [Header("Lifetime")]
-    [SerializeField] private float lifeTime = 3f;
+    [Header("Move/Time")]
+    [SerializeField] private float impulseForce = 30f;
+    [SerializeField] private float timeToRelease = 5f;
+    
+    [Header("Damage")]
+    [SerializeField] private float damageRadius = 4f;
+    [SerializeField] private float damageGenerated = 25f;
+    [SerializeField] private LayerMask damageLayerMask;
+    
+    private Rigidbody _rigidbody;
 
-    [Header("Effects")]
-    [SerializeField] private GameObject explosionEffect;
-
-    private Rigidbody rb;
-    private bool exploded = false;
-
-    private void Start()
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.linearVelocity = transform.forward * speed;
-        }
-
-        Destroy(gameObject, lifeTime);
+       grenadeParticlesPool = new ObjectPool<ParticlesBehavior>(OnCreateParticles, OnGetParticles, OnReleaseParticles);
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    public void Launch(Vector3 direction)
     {
+        _rigidbody.linearVelocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
+        _rigidbody.AddForce(direction.normalized * impulseForce, ForceMode.Impulse);
+        StartCoroutine(WaitAndRelease());
+    }
+
+    private IEnumerator WaitAndRelease()
+    {
+        yield return new WaitForSeconds(timeToRelease);
         Explode();
+        GrenadePool.Release(this);
     }
 
     private void Explode()
     {
-        if (exploded) return;
-
-        exploded = true;
-
-        if (explosionEffect != null)
+        Collider[] hits = Physics.OverlapSphere(transform.position, damageRadius, damageLayerMask);
+        foreach (Collider hit in hits)
         {
-            GameObject effect =
-                Instantiate(
-                    explosionEffect,
-                    transform.position,
-                    Quaternion.identity
-                );
-
-            Destroy(effect, 2f);
-        }
-
-        Collider[] colliders =
-            Physics.OverlapSphere(
-                transform.position,
-                explosionRadius
-            );
-
-        foreach (Collider nearbyObject in colliders)
-        {
-            EnemyHealth enemy =
-                nearbyObject.GetComponent<EnemyHealth>();
-
-            if (enemy != null)
+            IDamagable damageable = hit.GetComponentInParent<IDamagable>();
+            if (damageable != null)
             {
-                float distance =
-                    Vector3.Distance(
-                        transform.position,
-                        nearbyObject.transform.position
-                    );
-
-                float damagePercent =
-                    1 - (distance / explosionRadius);
-
-                damagePercent = Mathf.Clamp01(damagePercent);
-
-                int damage =
-                    Mathf.RoundToInt(maxDamage * damagePercent);
-
-                //enemy.TakeDamage(damage);
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+                float damage = Mathf.Clamp01(1 - (distance / damageRadius)) * damageGenerated;
+                damageable.ApplyDamage(damage);
             }
         }
 
-        Destroy(gameObject);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.audioLibrary.grenadeSfx);
+        
+        //Hacer aparecer las partículas en la posición y rotación de la granada
+        var explosion = grenadeParticlesPool.Get();
+        explosion.transform.position = transform.position;
+        explosion.transform.rotation = Quaternion.identity;
     }
-
+    
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, damageRadius);
+    }
+    
+    //--------------------PARTICLES----------------------//
+    private ParticlesBehavior OnCreateParticles()
+    {
+        ParticlesBehavior particlesCopy = Instantiate(grenadeParticlesPrefab);
+        particlesCopy.ParticlesPool = grenadeParticlesPool;
+        return particlesCopy;
+    }
 
-        Gizmos.DrawWireSphere(
-            transform.position,
-            explosionRadius
-        );
+    private void OnGetParticles(ParticlesBehavior newParticles)
+    {
+        newParticles.gameObject.SetActive(true);
+        newParticles.StartParticlesSystem();
+    }
+
+    private void OnReleaseParticles(ParticlesBehavior grenadeParticles)
+    {
+        grenadeParticles.gameObject.SetActive(false);
     }
 }

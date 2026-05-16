@@ -10,7 +10,7 @@ public class WeaponController : Weapon
 
     [Header("Projectiles")]
     [SerializeField] private GameObject bulletPrefab;
-    //[SerializeField] private GameObject grenadePrefab;
+    [SerializeField] private GameObject grenadePrefab;
 
     [Header("Effects")]
    // [SerializeField] private ParticleSystem muzzleParticles;
@@ -23,11 +23,11 @@ public class WeaponController : Weapon
     [SerializeField] private float pistolFireRate = 0.4f;
     [SerializeField] private float grenadeFireRate = 1.2f;
 
-    /*[Header("Knife")]
+    [Header("Knife")]
     [SerializeField] private float knifeRange = 2f;
     [SerializeField] private int knifeDamage = 25;
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private Animator animator;*/
+    //[SerializeField] private Animator animator;*/
 
     [Header("Camera")]
     [SerializeField] private GameObject crosshairImage;
@@ -214,11 +214,11 @@ public class WeaponController : Weapon
 
     private void SpawnGrenade()
     {
-      /*  Instantiate(
+        Instantiate(
             grenadePrefab,
             shootSpawn.position,
             shootSpawn.rotation
-        );*/
+        );
     }
 
     private void KnifeAttack()
@@ -231,21 +231,16 @@ public class WeaponController : Weapon
         ray.origin = cameraTransform.position;
         ray.direction = cameraTransform.forward;
 
-       /* if (Physics.Raycast(
-            ray,
-            out hit,
-            knifeRange,
-            enemyLayer,
-            QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(ray,out hit,knifeRange,enemyLayer,QueryTriggerInteraction.Ignore))
         {
-            EnemyHealth enemy;
+            EnemyHealthSystem enemy;
 
             if (hit.collider.TryGetComponent(
                 out enemy))
             {
                 enemy.TakeDamage(knifeDamage);
             }
-        }*/
+        }
     }
 
     public void SetWeaponType(WeaponType weapon)

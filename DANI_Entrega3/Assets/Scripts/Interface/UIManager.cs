@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] private GameObject hudInstance;
     [SerializeField] private float panelDuration;
-
+    
     [Header("Finals")]
     [SerializeField] private GameObject missionCompletePanel;
     [SerializeField] private GameObject missionFailedPanel;
@@ -41,7 +41,7 @@ public class UIManager : MonoBehaviour
         hudInstance.SetActive(false);
         dialogueSystem.gameObject.SetActive(false);
 
-        // Estado inicial: mostrar HUD, ocultar di·logo
+        // Estado inicial: mostrar HUD, ocultar di√°logo
         ShowInitialDialogue();
     }
 
@@ -55,10 +55,10 @@ public class UIManager : MonoBehaviour
             dialogueSystem.SetDialogue(_initialDialogue);
 
             dialogueSystem.gameObject.SetActive(true);
-            dialogueSystem?.StartDialogue(); // Inicia el di·logo manualmente
-
+            dialogueSystem?.StartDialogue(); // Inicia el di√°logo manualmente
+            
             IsDialogueActive = true;
-
+            
             // Pausar la escena
             Time.timeScale = 0f;
         }
@@ -73,22 +73,22 @@ public class UIManager : MonoBehaviour
             dialogueSystem.gameObject.SetActive(false);
     }
 
-    // Muestra el di·logo final
+    // Muestra el di√°logo final
     public void ShowFinalDialogue()
     {
         hudInstance?.SetActive(false);
         dialogueSystem.gameObject.SetActive(true);
 
-        // Le pasamos el nuevo di·logo al sistema
+        // Le pasamos el nuevo di√°logo al sistema
         dialogueSystem.SetDialogue(_finalDialogue);
 
         IsDialogueActive = true;
-        showMissionCompletePanel = true; // marcar que despuÈs viene la victoria
+        showMissionCompletePanel = true; // marcar que despu√©s viene la victoria
 
         Time.timeScale = 0f;
         dialogueSystem.StartDialogue();
     }
-
+    
     public void ShowMissionComplete()
     {
         dialogueSystem.gameObject?.SetActive(false);
@@ -103,12 +103,12 @@ public class UIManager : MonoBehaviour
 
         StartCoroutine(ShowPanelForSeconds(missionFailedPanel));
     }
-
+    
     private IEnumerator ShowPanelForSeconds(GameObject panel)
     {
         // Pausar la escena
         Time.timeScale = 0f;
-
+        
         panel?.SetActive(true);
         yield return new WaitForSecondsRealtime(panelDuration);
         panel?.SetActive(false);
@@ -116,18 +116,18 @@ public class UIManager : MonoBehaviour
 
         SceneFlowManager.Instance.LoadMainMenu();
     }
-
-    // Este mÈtodo ser· llamado por el DialogueSystem al terminar el di·logo
+    
+    // Este m√©todo ser√° llamado por el DialogueSystem al terminar el di√°logo
     public void OnDialogueEnded()
     {
         ShowHUD();
-
+        
         IsDialogueActive = false;
-
+        
         if (showMissionCompletePanel)
         {
             showMissionCompletePanel = false;
-            ShowMissionComplete(); // ?? ahora muestra la victoria tras el di·logo
+            ShowMissionComplete(); // üëà ahora muestra la victoria tras el di√°logo
         }
         else
         {

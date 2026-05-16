@@ -36,7 +36,6 @@ public class AimStateManager : MonoBehaviour
         currentYRotation = camFollowPos.localEulerAngles.x;
 
         mainCamera.Priority = 10;
-        droneCamera.Priority = 0;
 
         if (droneObject != null)
         {
