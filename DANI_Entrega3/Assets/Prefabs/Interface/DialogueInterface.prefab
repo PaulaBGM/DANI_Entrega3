@@ -162,7 +162,6 @@ GameObject:
   - component: {fileID: 8543287369957739748}
   - component: {fileID: 1023272097276732060}
   - component: {fileID: 174772048481638469}
-  - component: {fileID: 2299178362040793258}
   m_Layer: 5
   m_Name: DialogueInterface
   m_TagString: Untagged
@@ -257,23 +256,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &2299178362040793258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2418138825754778800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e45edf70fd36b447a9570e0c42ba53a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speakerNameText: {fileID: 8032344448315054765}
-  dialogueText: {fileID: 4664105871072604223}
-  imageBriefcase: {fileID: 5914058169627096015}
-  lineToShowImage: 2
-  typingSpeed: 0.04
 --- !u!1 &7221112930439978957
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,6 +359,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -513,6 +496,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -650,10 +634,5 @@ PrefabInstance:
 --- !u!224 &4337161257436417484 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3855978866931044497, guid: ed8bedf573bfcef46869e2fcfd5a98ee, type: 3}
-  m_PrefabInstance: {fileID: 699044713994591581}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5914058169627096015 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6602688153203355282, guid: ed8bedf573bfcef46869e2fcfd5a98ee, type: 3}
   m_PrefabInstance: {fileID: 699044713994591581}
   m_PrefabAsset: {fileID: 0}

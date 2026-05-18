@@ -26,8 +26,8 @@ public class PlayerMain : MonoBehaviour
 
     private void OnEnable()
     {
-        OnAmmoGunBoxCollected += playerAmmoSystem.AddGunAmmo;
-        OnAmmoGrenadeBoxCollected += playerAmmoSystem.AddClusterAmmo;
+        //OnAmmoGunBoxCollected += playerAmmoSystem.AddGunAmmo;
+        //OnAmmoGrenadeBoxCollected += playerAmmoSystem.AddClusterAmmo;
         OnHealed += playerHealthSystem.Heal;
         OnDehydrated += playerHealthSystem.ApplyDamage;
         OnHydrated += playerThirstSystem.Drink;
@@ -35,11 +35,22 @@ public class PlayerMain : MonoBehaviour
 
     private void OnDisable()
     {
-        OnAmmoGunBoxCollected -= playerAmmoSystem.AddGunAmmo;
-        OnAmmoGrenadeBoxCollected -= playerAmmoSystem.AddClusterAmmo;
-        OnHealed -= playerHealthSystem.Heal;
-        OnDehydrated -= playerHealthSystem.ApplyDamage;
-        OnHydrated -= playerThirstSystem.Drink;
+        if (playerAmmoSystem != null)
+        {
+            OnAmmoGunBoxCollected -= playerAmmoSystem.AddGunAmmo;
+            OnAmmoGrenadeBoxCollected -= playerAmmoSystem.AddClusterAmmo;
+        }
+
+        if (playerHealthSystem != null)
+        {
+            OnHealed -= playerHealthSystem.Heal;
+            OnDehydrated -= playerHealthSystem.ApplyDamage;
+        }
+
+        if (playerThirstSystem != null)
+        {
+            OnHydrated -= playerThirstSystem.Drink;
+        }
     }
 
     public void NotifiesDehydrated(float amount) => OnDehydrated?.Invoke(amount);

@@ -132,10 +132,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Sensor>k__BackingField: {fileID: 5718886122345479897}
+  <Hearing>k__BackingField: {fileID: 8086195725639328801}
   _ragdollSystem: {fileID: 4934947453244166945}
+  _eventManagerSO: {fileID: 11400000, guid: e6be14773093fb9439f281d4b0fe38fd, type: 2}
   maxHealth: 100
   timeToDestroy: 4.5
-  _eventManagerSO: {fileID: 11400000, guid: e6be14773093fb9439f281d4b0fe38fd, type: 2}
+  <MaximumSpeed>k__BackingField: 3.5
 --- !u!114 &4934947453244166945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  ragdollSystem: {fileID: 0}
+  ragdollSystem: {fileID: 4934947453244166945}
 --- !u!1 &314088634196140275
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,6 +1976,7 @@ GameObject:
   - component: {fileID: 8027230910008233606}
   - component: {fileID: 5718886122345479897}
   - component: {fileID: 429380883871940133}
+  - component: {fileID: 8086195725639328801}
   m_Layer: 10
   m_Name: Sensor
   m_TagString: Untagged
@@ -2012,7 +2015,7 @@ MonoBehaviour:
   sensorAngle: 65
   obstaclesMask:
     serializedVersion: 2
-    m_Bits: 959
+    m_Bits: 4294967295
   headTransform: {fileID: 3999193846625866104}
 --- !u!135 &429380883871940133
 SphereCollider:
@@ -2035,6 +2038,19 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 9
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8086195725639328801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111619678115617854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d1df951820cfa8408820f8863bf5014, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hearingDistance: 12
 --- !u!1 &5248094953745276507
 GameObject:
   m_ObjectHideFlags: 0
@@ -4077,7 +4093,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3027624986625184645, guid: b9219c70230e05d4f9f5b4225e87f0b8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 62.48668
+      value: 36.44
       objectReference: {fileID: 0}
     - target: {fileID: 3027624986625184645, guid: b9219c70230e05d4f9f5b4225e87f0b8, type: 3}
       propertyPath: m_LocalPosition.y

@@ -60,7 +60,7 @@ public class PlayerMove : MonoBehaviour
     private float dashTime;
     [SerializeField] private float dashDuration = 1f;
     [SerializeField] private float dashSpeed = 7f;
-    [SerializeField] private float dashEndSpeed = 1f;
+    //[SerializeField] private float dashEndSpeed = 1f;
     private Vector3 dashDirection;
 
     private Vector3 slideVelocity;

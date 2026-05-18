@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee0f3b9c67af6d4495c1d447d2061be, type: 3}
   m_Name: SceneManagerSO
   m_EditorClassIdentifier: 
-  mainMenuScene: {fileID: 0}
-  inGameScene: {fileID: 0}
+  mainMenuScene: {fileID: 102900000, guid: 9383fc428a47af448960737d978bdad2, type: 3}
+  inGameScene: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}

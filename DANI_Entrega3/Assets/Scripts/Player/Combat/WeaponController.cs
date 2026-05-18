@@ -27,7 +27,7 @@ public class WeaponController : Weapon
     [SerializeField] private float knifeRange = 2f;
     [SerializeField] private int knifeDamage = 25;
     [SerializeField] private LayerMask enemyLayer;
-    //[SerializeField] private Animator animator;*/
+    //[SerializeField] private Animator animator;
 
     [Header("Camera")]
     [SerializeField] private GameObject crosshairImage;
@@ -247,4 +247,5 @@ public class WeaponController : Weapon
     {
         currentWeapon = weapon;
     }
+
 }

@@ -22,12 +22,6 @@ public class AimStateManager : MonoBehaviour
 
     [Header("Cameras")]
     [SerializeField] private CinemachineCamera mainCamera;
-    [SerializeField] private CinemachineCamera droneCamera;
-    [SerializeField] private KeyCode switchCameraKey = KeyCode.E;
-
-    [Header("Drone Settings")]
-    [SerializeField] private GameObject droneObject;
-    private bool isDroneCameraActive = false;
 
     void Awake()
     {
@@ -36,26 +30,11 @@ public class AimStateManager : MonoBehaviour
         currentYRotation = camFollowPos.localEulerAngles.x;
 
         mainCamera.Priority = 10;
-
-        if (droneObject != null)
-        {
-            droneObject.SetActive(false);
-        }
     }
 
     void Update()
     {
         if (playerBehavior == null || playerBehavior.IsDead) return;
-       /* if (checkinteraction.interactionStarted) 
-        { 
-            robotFound = true;
-            Destroy(modelrobot);
-            
-        }
-        if (Input.GetKeyDown(switchCameraKey) && robotFound)
-        {
-            ToggleCamera();
-        }*/
     }
 
     private void LateUpdate()
@@ -72,25 +51,6 @@ public class AimStateManager : MonoBehaviour
     public void NormalCamera()
     {
         currentYRotation = Mathf.Clamp(currentYRotation, -15f, 15f);
-    }
-
-    private void ToggleCamera()
-    {
-        isDroneCameraActive = !isDroneCameraActive;
-        mainCamera.Priority = isDroneCameraActive ? 0 : 10;
-        droneCamera.Priority = isDroneCameraActive ? 10 : 0;
-
-        if (droneObject != null)
-        {
-            droneObject.SetActive(isDroneCameraActive);
-        }
-
-        // Desactivar PlayerMove si la cámara principal no está activa
-        PlayerMove playerMove = GetComponent<PlayerMove>();
-        if (playerMove != null)
-        {
-            playerMove.enabled = !isDroneCameraActive;
-        }
     }
 
 
