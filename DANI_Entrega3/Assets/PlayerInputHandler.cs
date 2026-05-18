@@ -116,7 +116,7 @@ public class PlayerInputHandler : MonoBehaviour
                 InteractPressed = false;
             };
 
-        // SCROLL
+        // SCROLLSCROLL
         inputActions.Player.ChangeWeapon.performed +=
             ctx =>
             {
