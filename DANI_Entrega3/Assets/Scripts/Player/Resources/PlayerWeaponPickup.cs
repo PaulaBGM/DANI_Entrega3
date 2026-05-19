@@ -29,17 +29,24 @@ public class PlayerWeaponPickup : MonoBehaviour
 
     private void Awake()
     {
-        input =
-            GetComponent<PlayerInputHandler>();
+        input = GetComponent<PlayerInputHandler>();
 
-        inventory =
-            GetComponent<PlayerInventory>();
+        inventory = GetComponent<PlayerInventory>();
+
+        if (inventory == null)
+        {
+            inventory =
+                GetComponentInChildren<PlayerInventory>();
+        }
 
         if (animator == null)
         {
             animator =
-                GetComponent<Animator>();
+                GetComponentInParent<Animator>();
         }
+
+        Debug.Log(
+            $"INVENTORY FOUND: {inventory}");
     }
 
     private void Update()

@@ -88,42 +88,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Weapon1",
-                    "type": "Button",
-                    "id": "95174bb0-34b2-49f4-8700-cf9836d4e88c",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Weapon2",
-                    "type": "Button",
-                    "id": "0c3d8bb6-4f0c-4e14-ae8d-193fd62c4be0",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Weapon3",
-                    "type": "Button",
-                    "id": "ebb8aaad-1bed-49ae-b2c4-c50c6dc451ec",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Weapon4",
-                    "type": "Button",
-                    "id": "879d6a69-a6a3-4db3-9816-f11fca771f25",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Reload",
                     "type": "Button",
                     "id": "db62ed78-38aa-4ea6-aeef-23554a201585",
@@ -154,15 +118,6 @@
                     "name": "SwitchCamera",
                     "type": "Button",
                     "id": "df393adf-b88f-4465-b655-badad9a90610",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Scroll",
-                    "type": "Button",
-                    "id": "079271cc-052c-4fa5-b7c2-13834924cf0f",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -500,50 +455,6 @@
                 },
                 {
                     "name": "",
-                    "id": "ea8c6110-0804-41f2-bf00-082ceaf21f33",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Weapon1",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a5c88051-7c0c-41d7-842a-57924bd640fb",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Weapon2",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "dbf6d8ab-9b6a-4c6d-b057-9efcfe74df37",
-                    "path": "<Keyboard>/3",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Weapon3",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a2fbf382-2938-4084-9bcf-940612c351fc",
-                    "path": "<Keyboard>/4",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Weapon4",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "2f71beaa-24f2-42e5-b273-311956025590",
                     "path": "",
                     "interactions": "",
@@ -583,17 +494,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "SwitchCamera",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "27604a35-4a90-4636-8997-3c47e9ae0056",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

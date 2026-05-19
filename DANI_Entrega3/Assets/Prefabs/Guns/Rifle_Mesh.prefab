@@ -69,9 +69,6 @@ PrefabInstance:
       addedObject: {fileID: 2231390130738622547}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b46ec1c3c7cc9a148a2df7236a50a4c0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3705046824670179683}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b46ec1c3c7cc9a148a2df7236a50a4c0, type: 3}
-      insertIndex: -1
       addedObject: {fileID: -6912702972354258369}
   m_SourcePrefab: {fileID: 100100000, guid: b46ec1c3c7cc9a148a2df7236a50a4c0, type: 3}
 --- !u!1 &6726302908946380883 stripped
@@ -102,19 +99,6 @@ CapsuleCollider:
   m_Height: 1.09
   m_Direction: 2
   m_Center: {x: 0, y: 0.1, z: 0.11}
---- !u!114 &3705046824670179683
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6726302908946380883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc9a7d3b2fdaec7448151a2e5fe5416b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponType: 0
 --- !u!114 &-6912702972354258369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,4 +112,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: a0b94719dbbc45f43a648a81d3aa61d0, type: 2}
+  weaponType: 0
   shootPoint: {fileID: 0}
