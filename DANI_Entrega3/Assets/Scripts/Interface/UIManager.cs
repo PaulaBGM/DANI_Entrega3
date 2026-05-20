@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        hudInstance.SetActive(false);
+        //hudInstance.SetActive(false);
         dialogueSystem.gameObject.SetActive(false);
 
         // Estado inicial: mostrar HUD, ocultar diálogo

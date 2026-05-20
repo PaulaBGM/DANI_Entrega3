@@ -1,70 +1,173 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.Cinemachine;
 
 public class AimStateManager : MonoBehaviour
 {
-    private PlayerBehavior playerBehavior;
-    public string xAxisInput = "Mouse X";
-    public string yAxisInput = "Mouse Y";
-    public Transform camFollowPos;
-    /*public bool robotFound = false;
-    public GameObject modelrobot;
-    public GameObject dialogue;
-    public CheckInteraction checkinteraction;*/
+    [Header("References")]
+    [SerializeField] public Transform camFollowPos;
 
-    [Header("Smooth Settings")]
+    [SerializeField] private Camera mainCamera;
+
+    [Header("Settings")]
+    [SerializeField] private float sensitivity = 120f;
+
     [SerializeField] private float smoothSpeed = 10f;
 
+    [Header("Vertical Clamp")]
+    [SerializeField] private float normalMinPitch = -15f;
+
+    [SerializeField] private float normalMaxPitch = 15f;
+
+    [SerializeField] private float aimMinPitch = -11f;
+
+    [SerializeField] private float aimMaxPitch = 3f;
+
+    [Header("Aim FOV")]
+    [SerializeField] private float normalFov = 60f;
+
+    [SerializeField] private float aimFov = 40f;
+
+    [SerializeField] private float fovSpeed = 10f;
+
+    private PlayerInputHandler input;
+
     private float currentXRotation;
+
     private float currentYRotation;
 
-    [Header("Cameras")]
-    [SerializeField] private CinemachineCamera mainCamera;
+    private float minPitch;
 
-    void Awake()
+    private float maxPitch;
+
+    private void Awake()
     {
-        playerBehavior = GetComponent<PlayerBehavior>();
-        currentXRotation = transform.eulerAngles.y;
-        currentYRotation = camFollowPos.localEulerAngles.x;
+        input = GetComponent<PlayerInputHandler>();
 
-        mainCamera.Priority = 10;
-    }
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
 
-    void Update()
-    {
-        if (playerBehavior == null || playerBehavior.IsDead) return;
+        currentXRotation =
+            transform.eulerAngles.y;
+
+        currentYRotation =
+            camFollowPos.localEulerAngles.x;
+
+        Cursor.lockState =
+            CursorLockMode.Locked;
+
+        Cursor.visible = false;
+
+        NormalCamera();
     }
 
     private void LateUpdate()
     {
-        if (playerBehavior == null || playerBehavior.IsDead) return;
-        SmoothRotate(camFollowPos);
+        RotateCamera();
+
+        HandleAimCamera();
     }
+
+    // =========================
+    // ROTATION
+    // =========================
+
+    private void RotateCamera()
+    {
+        Vector2 look =
+            input.LookInput;
+
+        float mouseX =
+            look.x *
+            sensitivity *
+            Time.deltaTime;
+
+        float mouseY =
+            look.y *
+            sensitivity *
+            Time.deltaTime;
+
+        currentXRotation += mouseX;
+
+        currentYRotation -= mouseY;
+
+        currentYRotation =
+            Mathf.Clamp(
+                currentYRotation,
+                minPitch,
+                maxPitch);
+
+        Quaternion targetBodyRotation =
+            Quaternion.Euler(
+                0f,
+                currentXRotation,
+                0f);
+
+        Quaternion targetCameraRotation =
+            Quaternion.Euler(
+                currentYRotation,
+                0f,
+                0f);
+
+        transform.rotation =
+            Quaternion.Slerp(
+                transform.rotation,
+                targetBodyRotation,
+                smoothSpeed * Time.deltaTime);
+
+        camFollowPos.localRotation =
+            Quaternion.Slerp(
+                camFollowPos.localRotation,
+                targetCameraRotation,
+                smoothSpeed * Time.deltaTime);
+    }
+
+    // =========================
+    // AIM
+    // =========================
+
+    private void HandleAimCamera()
+    {
+        if (input.AimPressed)
+        {
+            ShootCamera();
+        }
+        else
+        {
+            NormalCamera();
+        }
+
+        float targetFov =
+            input.AimPressed
+            ? aimFov
+            : normalFov;
+
+        mainCamera.fieldOfView =
+            Mathf.Lerp(
+                mainCamera.fieldOfView,
+                targetFov,
+                fovSpeed * Time.deltaTime);
+    }
+
+    // =========================
+    // AIM MODE
+    // =========================
 
     public void ShootCamera()
     {
-        currentYRotation = Mathf.Clamp(currentYRotation, -11f, 3f);
+        minPitch = aimMinPitch;
+
+        maxPitch = aimMaxPitch;
     }
+
+    // =========================
+    // NORMAL MODE
+    // =========================
 
     public void NormalCamera()
     {
-        currentYRotation = Mathf.Clamp(currentYRotation, -15f, 15f);
-    }
+        minPitch = normalMinPitch;
 
-
-    private void SmoothRotate(Transform location)
-    {
-        float mouseX = Input.GetAxis(xAxisInput) * smoothSpeed * Time.deltaTime;
-        float mouseY = Input.GetAxis(yAxisInput) * smoothSpeed * Time.deltaTime;
-
-        currentXRotation += mouseX;
-        currentYRotation -= mouseY;
-
-        currentYRotation = Mathf.Clamp(currentYRotation, -15f, 15f);
-
-        location.localRotation = Quaternion.Euler(currentYRotation, 0f, 0f);
-        transform.rotation = Quaternion.Euler(0f, currentXRotation, 0f);
+        maxPitch = normalMaxPitch;
     }
 }
