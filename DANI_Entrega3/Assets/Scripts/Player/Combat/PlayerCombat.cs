@@ -23,45 +23,34 @@ public class PlayerCombat : MonoBehaviour
 
         if (inventory == null)
         {
-            Debug.LogError("INVENTORY NULL");
             return;
         }
 
         if (inventory.CurrentWeapon == null)
         {
-            Debug.LogError("CURRENT WEAPON NULL");
             return;
         }
 
-        Debug.Log(
-            $"CURRENT HOLDER: {inventory.CurrentWeapon.name}");
+        Debug.Log($"CURRENT HOLDER: {inventory.CurrentWeapon.name}");
 
         if (inventory.CurrentWeapon.weaponBase == null)
         {
-            Debug.LogError(
-                $"WEAPON BASE NULL ON HOLDER: {inventory.CurrentWeapon.name}");
+            Debug.LogError( $"WEAPON BASE NULL ON HOLDER: {inventory.CurrentWeapon.name}");
 
             return;
         }
 
-        WeaponBase weapon =
-            inventory.CurrentWeapon.weaponBase;
+        WeaponBase weapon = inventory.CurrentWeapon.weaponBase;
 
-        Debug.Log(
-            $"WEAPON FOUND: {weapon.name}");
+        Debug.Log( $"WEAPON FOUND: {weapon.name}");
 
         if (weapon.data == null)
         {
-            Debug.LogError(
-                $"WEAPON DATA NULL: {weapon.name}");
-
             return;
         }
 
         if (input == null)
         {
-            Debug.LogError("INPUT NULL");
-
             return;
         }
 

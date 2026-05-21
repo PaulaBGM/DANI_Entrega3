@@ -26,8 +26,8 @@ public class PlayerMain : MonoBehaviour
 
     private void OnEnable()
     {
-        //OnAmmoGunBoxCollected += playerAmmoSystem.AddGunAmmo;
-        //OnAmmoGrenadeBoxCollected += playerAmmoSystem.AddClusterAmmo;
+        OnAmmoGunBoxCollected += playerAmmoSystem.AddGunAmmo;
+        OnAmmoGrenadeBoxCollected += playerAmmoSystem.AddClusterAmmo;
         OnHealed += playerHealthSystem.Heal;
         OnDehydrated += playerHealthSystem.ApplyDamage;
         OnHydrated += playerThirstSystem.Drink;

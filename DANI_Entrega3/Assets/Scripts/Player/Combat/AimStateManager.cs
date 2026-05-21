@@ -7,10 +7,16 @@ public class AimStateManager : MonoBehaviour
 
     [SerializeField] private Camera mainCamera;
 
+    [SerializeField] private Transform playerModel;
+
     [Header("Settings")]
     [SerializeField] private float sensitivity = 120f;
 
+    [SerializeField] private float aimSensitivityMultiplier = 0.6f;
+
     [SerializeField] private float smoothSpeed = 10f;
+
+    [SerializeField] private float aimRotateSpeed = 15f;
 
     [Header("Vertical Clamp")]
     [SerializeField] private float normalMinPitch = -15f;
@@ -28,6 +34,21 @@ public class AimStateManager : MonoBehaviour
 
     [SerializeField] private float fovSpeed = 10f;
 
+    [Header("Camera Positions")]
+    [SerializeField] private Vector3 normalCameraPosition;
+
+    [SerializeField]
+    private Vector3 aimCameraPosition =
+        new Vector3(0.5f, 1.5f, -1.2f);
+
+    [SerializeField] private float cameraMoveSpeed = 10f;
+
+    [Header("Crosshair")]
+    [SerializeField] private GameObject crosshair;
+
+    [Header("Combat")]
+    [SerializeField] private bool rotatePlayerWhileAiming = true;
+
     private PlayerInputHandler input;
 
     private float currentXRotation;
@@ -37,6 +58,10 @@ public class AimStateManager : MonoBehaviour
     private float minPitch;
 
     private float maxPitch;
+
+    private bool isAiming;
+
+    public bool IsAiming => isAiming;
 
     private void Awake()
     {
@@ -53,6 +78,9 @@ public class AimStateManager : MonoBehaviour
         currentYRotation =
             camFollowPos.localEulerAngles.x;
 
+        normalCameraPosition =
+            camFollowPos.localPosition;
+
         Cursor.lockState =
             CursorLockMode.Locked;
 
@@ -63,13 +91,31 @@ public class AimStateManager : MonoBehaviour
 
     private void LateUpdate()
     {
+        HandleAimState();
+
         RotateCamera();
 
         HandleAimCamera();
+
+        HandleCameraPosition();
+
+        HandleCrosshair();
+
+        RotatePlayerToCamera();
     }
 
     // =========================
-    // ROTATION
+    // AIM STATE
+    // =========================
+
+    private void HandleAimState()
+    {
+        isAiming =
+            input.AimPressed;
+    }
+
+    // =========================
+    // CAMERA ROTATION
     // =========================
 
     private void RotateCamera()
@@ -77,14 +123,19 @@ public class AimStateManager : MonoBehaviour
         Vector2 look =
             input.LookInput;
 
+        float currentSensitivity =
+            isAiming
+            ? sensitivity * aimSensitivityMultiplier
+            : sensitivity;
+
         float mouseX =
             look.x *
-            sensitivity *
+            currentSensitivity *
             Time.deltaTime;
 
         float mouseY =
             look.y *
-            sensitivity *
+            currentSensitivity *
             Time.deltaTime;
 
         currentXRotation += mouseX;
@@ -123,12 +174,30 @@ public class AimStateManager : MonoBehaviour
     }
 
     // =========================
-    // AIM
+    // CAMERA POSITION
+    // =========================
+
+    private void HandleCameraPosition()
+    {
+        Vector3 targetPosition =
+            isAiming
+            ? aimCameraPosition
+            : normalCameraPosition;
+
+        camFollowPos.localPosition =
+            Vector3.Lerp(
+                camFollowPos.localPosition,
+                targetPosition,
+                cameraMoveSpeed * Time.deltaTime);
+    }
+
+    // =========================
+    // AIM CAMERA
     // =========================
 
     private void HandleAimCamera()
     {
-        if (input.AimPressed)
+        if (isAiming)
         {
             ShootCamera();
         }
@@ -138,7 +207,7 @@ public class AimStateManager : MonoBehaviour
         }
 
         float targetFov =
-            input.AimPressed
+            isAiming
             ? aimFov
             : normalFov;
 
@@ -147,6 +216,49 @@ public class AimStateManager : MonoBehaviour
                 mainCamera.fieldOfView,
                 targetFov,
                 fovSpeed * Time.deltaTime);
+    }
+
+    // =========================
+    // CROSSHAIR
+    // =========================
+
+    private void HandleCrosshair()
+    {
+        if (crosshair == null)
+            return;
+
+        crosshair.SetActive(isAiming);
+    }
+
+    // =========================
+    // PLAYER ROTATION
+    // =========================
+
+    private void RotatePlayerToCamera()
+    {
+        if (!rotatePlayerWhileAiming)
+            return;
+
+        if (!isAiming)
+            return;
+
+        Vector3 lookDirection =
+            mainCamera.transform.forward;
+
+        lookDirection.y = 0f;
+
+        if (lookDirection.sqrMagnitude <= 0.01f)
+            return;
+
+        Quaternion targetRotation =
+            Quaternion.LookRotation(
+                lookDirection);
+
+        playerModel.rotation =
+            Quaternion.Slerp(
+                playerModel.rotation,
+                targetRotation,
+                aimRotateSpeed * Time.deltaTime);
     }
 
     // =========================

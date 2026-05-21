@@ -20,8 +20,6 @@ public class PlayerInventory : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("PLAYER INVENTORY AWAKE");
-
         input = GetComponentInParent<PlayerInputHandler>();
 
         if (animator == null)
@@ -29,52 +27,31 @@ public class PlayerInventory : MonoBehaviour
 
         WeaponHolder[] allWeapons = GetComponentsInChildren<WeaponHolder>(true);
 
-        Debug.Log($"HOLDERS FOUND: {allWeapons.Length}");
-
         foreach (WeaponHolder holder in allWeapons)
         {
-            Debug.Log($"HOLDER FOUND: {holder.name}");
-
             if (holder.weaponBase == null)
             {
                 Debug.LogError($"WEAPON BASE NULL ON: {holder.name}");
                 continue;
             }
 
-            Debug.Log($"WEAPON BASE ACTIVE BEFORE START: {holder.weaponBase.gameObject.activeSelf}");
         }
     }
 
     private void Start()
     {
-        Debug.Log("PLAYER INVENTORY START");
 
         WeaponHolder[] allWeapons = GetComponentsInChildren<WeaponHolder>(true);
 
         foreach (WeaponHolder holder in allWeapons)
         {
-            Debug.Log($"DISABLING HOLDER: {holder.name}");
 
             holder.gameObject.SetActive(false);
-
-            if (holder.weaponBase != null)
-            {
-                Debug.Log($"WEAPON BASE AFTER HOLDER DISABLE: {holder.weaponBase.name} ACTIVE = {holder.weaponBase.gameObject.activeSelf}");
-            }
         }
 
         if (ownedWeapons.Count > 0)
         {
-            Debug.Log($"ACTIVATING START WEAPON: {ownedWeapons[0].name}");
-
             ownedWeapons[0].gameObject.SetActive(true);
-
-            Debug.Log($"START WEAPON ACTIVE: {ownedWeapons[0].gameObject.activeSelf}");
-
-            if (ownedWeapons[0].weaponBase != null)
-            {
-                Debug.Log($"START WEAPON BASE ACTIVE: {ownedWeapons[0].weaponBase.gameObject.activeSelf}");
-            }
 
             EquipWeapon(0);
         }
@@ -84,7 +61,6 @@ public class PlayerInventory : MonoBehaviour
     {
         if (input == null)
         {
-            Debug.LogError("INPUT NULL");
             return;
         }
 
@@ -95,72 +71,38 @@ public class PlayerInventory : MonoBehaviour
     {
         if (input.ScrollUpTriggered)
         {
-            Debug.Log("SCROLL UP");
-
             NextWeapon();
         }
 
         if (input.ScrollDownTriggered)
         {
-            Debug.Log("SCROLL DOWN");
-
             PreviousWeapon();
         }
     }
 
     public void AddWeapon(WeaponType type)
     {
-        Debug.Log($"TRYING TO ADD WEAPON: {type}");
 
         foreach (WeaponHolder owned in ownedWeapons)
         {
-            Debug.Log($"OWNED: {owned.weaponType}");
 
             if (owned.weaponType == type)
             {
-                Debug.Log($"ALREADY OWNED: {type}");
                 return;
             }
         }
 
         WeaponHolder[] allWeapons = GetComponentsInChildren<WeaponHolder>(true);
 
-        Debug.Log($"TOTAL HOLDERS IN PLAYER: {allWeapons.Length}");
-
         foreach (WeaponHolder holder in allWeapons)
         {
-            Debug.Log($"CHECKING HOLDER: {holder.name}");
-
-            Debug.Log($"HOLDER TYPE: {holder.weaponType}");
-
-            Debug.Log($"HOLDER ACTIVE: {holder.gameObject.activeSelf}");
-
-            if (holder.weaponBase != null)
-            {
-                Debug.Log($"WEAPON BASE: {holder.weaponBase.name}");
-
-                Debug.Log($"WEAPON BASE ACTIVE: {holder.weaponBase.gameObject.activeSelf}");
-            }
-            else
-            {
-                Debug.LogError($"WEAPON BASE NULL ON HOLDER: {holder.name}");
-            }
 
             if (holder.weaponType != type)
                 continue;
 
-            Debug.Log($"MATCH FOUND: {holder.name}");
-
             ownedWeapons.Add(holder);
 
             holder.gameObject.SetActive(true);
-
-            Debug.Log($"HOLDER ACTIVE AFTER ENABLE: {holder.gameObject.activeSelf}");
-
-            if (holder.weaponBase != null)
-            {
-                Debug.Log($"WEAPON BASE ACTIVE AFTER ENABLE: {holder.weaponBase.gameObject.activeSelf}");
-            }
 
             EquipWeapon(ownedWeapons.Count - 1);
 
@@ -169,7 +111,6 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
 
-        Debug.LogError($"NO WEAPON HOLDER FOUND: {type}");
     }
 
     public void NextWeapon()
@@ -206,51 +147,45 @@ public class PlayerInventory : MonoBehaviour
 
     private void EquipWeapon(int index)
     {
-        Debug.Log($"EQUIP INDEX: {index}");
-
         if (ownedWeapons.Count <= 0)
-        {
-            Debug.LogError("NO OWNED WEAPONS");
             return;
-        }
 
         currentIndex = index;
 
         for (int i = 0; i < ownedWeapons.Count; i++)
         {
             if (ownedWeapons[i] == null)
-            {
-                Debug.LogError($"NULL WEAPON AT INDEX: {i}");
                 continue;
-            }
 
-            bool active = i == index;
+            bool equipped =
+                i == index;
 
-            Debug.Log($"SETTING {ownedWeapons[i].name} ACTIVE = {active}");
+            WeaponHolder holder =
+                ownedWeapons[i];
 
-            ownedWeapons[i].gameObject.SetActive(active);
-
-            Debug.Log($"RESULT ACTIVE: {ownedWeapons[i].gameObject.activeSelf}");
-
-            if (ownedWeapons[i].weaponBase != null)
+            // HAND WEAPON
+            if (holder.handWeapon != null)
             {
-                Debug.Log($"WEAPON BASE ACTIVE: {ownedWeapons[i].weaponBase.gameObject.activeSelf}");
+                holder.handWeapon.SetActive(
+                    equipped);
+            }
+
+            // BACK WEAPON
+            if (holder.backWeapon != null)
+            {
+                holder.backWeapon.SetActive(
+                    !equipped);
             }
         }
 
-        CurrentWeapon = ownedWeapons[index];
+        CurrentWeapon =
+            ownedWeapons[index];
 
-        if (CurrentWeapon == null)
-        {
-            Debug.LogError("CURRENT WEAPON NULL");
-            return;
-        }
+        UpdateAnimator(
+            CurrentWeapon.weaponType);
 
-        Debug.Log($"CURRENT WEAPON: {CurrentWeapon.name}");
-
-        UpdateAnimator(CurrentWeapon.weaponType);
-
-        Debug.Log($"EQUIPPED: {CurrentWeapon.weaponType}");
+        Debug.Log(
+            $"EQUIPPED: {CurrentWeapon.weaponType}");
     }
 
     private void UpdateAnimator(WeaponType type)
@@ -272,7 +207,5 @@ public class PlayerInventory : MonoBehaviour
                 animator.SetBool(ShortWeapon, true);
                 break;
         }
-
-        Debug.Log($"ANIMATOR UPDATED: {type}");
     }
 }

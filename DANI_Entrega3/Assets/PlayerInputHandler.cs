@@ -4,27 +4,16 @@ using UnityEngine.InputSystem;
 public class PlayerInputHandler : MonoBehaviour
 {
     public Vector2 MoveInput { get; private set; }
-
     public Vector2 LookInput { get; private set; }
-
     public bool ShootPressed { get; private set; }
-
     public bool AimPressed { get; private set; }
-
     public bool JumpPressed { get; private set; }
-
     public bool DashPressed { get; private set; }
-
     public bool CrouchPressed { get; private set; }
-
     public bool InteractPressed { get; private set; }
-
     public bool InteractTriggered { get; private set; }
-
     public bool ScrollUpTriggered { get; private set; }
-
     public bool ScrollDownTriggered { get; private set; }
-
     private MyInputs inputActions;
 
     private void Awake()
@@ -32,75 +21,55 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions = new MyInputs();
     }
 
-    private void Start()
-    {
-        Debug.Log(
-            inputActions.Player.Interact);
-    }
-
     private void OnEnable()
     {
         inputActions.Enable();
 
-        // MOVE
         inputActions.Player.Move.performed +=
-            ctx => MoveInput =
-                ctx.ReadValue<Vector2>();
+            ctx => MoveInput = ctx.ReadValue<Vector2>();
 
         inputActions.Player.Move.canceled +=
-            ctx => MoveInput =
-                Vector2.zero;
+            ctx => MoveInput = Vector2.zero;
 
-        // LOOK
         inputActions.Player.Look.performed +=
-            ctx => LookInput =
-                ctx.ReadValue<Vector2>();
+            ctx => LookInput = ctx.ReadValue<Vector2>();
 
         inputActions.Player.Look.canceled +=
-            ctx => LookInput =
-                Vector2.zero;
+            ctx => LookInput = Vector2.zero;
 
-        // SHOOT
         inputActions.Player.Shoot.performed +=
             ctx => ShootPressed = true;
 
         inputActions.Player.Shoot.canceled +=
             ctx => ShootPressed = false;
 
-        // AIM
         inputActions.Player.Aim.performed +=
             ctx => AimPressed = true;
 
         inputActions.Player.Aim.canceled +=
             ctx => AimPressed = false;
 
-        // JUMP
         inputActions.Player.Jump.performed +=
             ctx => JumpPressed = true;
 
         inputActions.Player.Jump.canceled +=
             ctx => JumpPressed = false;
 
-        // DASH
         inputActions.Player.Dash.performed +=
             ctx => DashPressed = true;
 
         inputActions.Player.Dash.canceled +=
             ctx => DashPressed = false;
 
-        // CROUCH
         inputActions.Player.Crouch.performed +=
             ctx => CrouchPressed = true;
 
         inputActions.Player.Crouch.canceled +=
             ctx => CrouchPressed = false;
 
-        // INTERACT
         inputActions.Player.Interact.performed +=
             ctx =>
             {
-                Debug.Log(
-                    "INTERACT PRESSED");
 
                 InteractPressed = true;
 
@@ -110,21 +79,13 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.Interact.canceled +=
             ctx =>
             {
-                Debug.Log(
-                    "INTERACT RELEASED");
-
                 InteractPressed = false;
             };
 
-        // SCROLLSCROLL
         inputActions.Player.ChangeWeapon.performed +=
             ctx =>
             {
-                Vector2 scroll =
-                    ctx.ReadValue<Vector2>();
-
-                Debug.Log(
-                    $"SCROLL VECTOR: {scroll}");
+                Vector2 scroll = ctx.ReadValue<Vector2>();
 
                 if (scroll.y > 0)
                 {
@@ -149,7 +110,6 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnDisable()
     {
-        Debug.Log("INPUT DISABLE");
 
         inputActions.Disable();
     }

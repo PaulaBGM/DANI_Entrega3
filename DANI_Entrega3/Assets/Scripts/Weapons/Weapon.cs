@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum WeaponType
 {
+    None,
     Long,
     Short,
     GrenadeLauncher,

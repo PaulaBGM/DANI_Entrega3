@@ -30,14 +30,18 @@ public class PlayerInteractor : MonoBehaviour
 
     private void TryInteract()
     {
-        Ray ray = new Ray(
-            Camera.main.transform.position,
-            Camera.main.transform.forward);
+        Ray ray = new Ray(  Camera.main.transform.position,Camera.main.transform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
+        if (Physics.Raycast(ray,  out RaycastHit hit, interactRange))
         {
-            if (hit.collider.TryGetComponent(out IInteractable interactable))
+            Debug.Log($"INTERACT HIT: {hit.collider.name}");
+
+            IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
+
+            if (interactable != null)
             {
+                Debug.Log($"INTERACTING WITH: {hit.collider.name}");
+
                 interactable.Interact(gameObject);
             }
         }

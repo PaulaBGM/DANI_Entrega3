@@ -25,21 +25,35 @@ public class HearingSystem : MonoBehaviour
         NoiseEmitter.OnNoiseMade -= HearNoise;
     }
 
-    private void HearNoise(Vector3 noisePosition, float noiseRadius)
+    private void HearNoise(
+    Vector3 noisePosition,
+    float noiseRadius)
     {
-        Vector3 direction = noisePosition - transform.position;
+        Vector3 direction =
+            noisePosition - transform.position;
 
-        // Distancia al cuadrado
-        float distanceSqr = direction.sqrMagnitude;
+        float distanceSqr =
+            direction.sqrMagnitude;
 
-        // Radio total al cuadrado
-        float totalRange = hearingDistance + noiseRadius;
-        float totalRangeSqr = totalRange * totalRange;
+        float totalRange =
+            hearingDistance + noiseRadius;
 
-        // Comparación SIN sqrt
+        float totalRangeSqr =
+            totalRange * totalRange;
+
         if (distanceSqr <= totalRangeSqr)
         {
-            OnNoiseHeard?.Invoke(noisePosition);
+            Debug.Log(
+                $"{name} HEARD NOISE AT: {noisePosition}");
+
+            Debug.DrawLine(
+                transform.position,
+                noisePosition,
+                Color.cyan,
+                1.5f);
+
+            OnNoiseHeard?.Invoke(
+                noisePosition);
         }
     }
 }

@@ -71,7 +71,7 @@ public class EnemyBullet : MonoBehaviour
 
         GameObject other = collision.gameObject;
 
-        if (other.CompareTag("Player") && other.TryGetComponent<IDamagable>(out var damageable))
+        if (other.CompareTag("Player") && other.TryGetComponent<IDamageable>(out var damageable))
         {
             damageable.ApplyDamage(bulletDamage);
         }

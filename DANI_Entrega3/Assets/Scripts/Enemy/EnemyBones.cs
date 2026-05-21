@@ -2,7 +2,7 @@ using System;
 using FSM.Enemy;
 using UnityEngine;
 
-public class EnemyBones : MonoBehaviour, IDamagable
+public class EnemyBones : MonoBehaviour, IDamageable
 {
     [SerializeField] private EnemyHealthSystem enemyHealthSystem;
     [SerializeField] private float damageMultiplier;

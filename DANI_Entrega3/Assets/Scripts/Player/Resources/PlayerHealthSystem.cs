@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 
-public class PlayerHealthSystem : MonoBehaviour, IDamagable
+public class PlayerHealthSystem : MonoBehaviour, IDamageable
 {
     [SerializeField] private EventManagerSO eventManager;
     [SerializeField] private PlayerMain _playerMain;

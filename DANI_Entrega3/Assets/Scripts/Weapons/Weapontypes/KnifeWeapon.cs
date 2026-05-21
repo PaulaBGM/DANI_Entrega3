@@ -11,7 +11,7 @@ public class KnifeWeapon : WeaponBase
 
         if (Physics.Raycast(ray, out RaycastHit hit, range, enemyLayer))
         {
-            if (hit.collider.TryGetComponent(out IDamagable damageable))
+            if (hit.collider.TryGetComponent(out IDamageable damageable))
             {
                 damageable.ApplyDamage(data.damage);
             }

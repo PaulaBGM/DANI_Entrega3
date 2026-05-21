@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Rifle
   m_EditorClassIdentifier: 
   weaponType: 0
-  damage: 15
-  fireRate: 3
+  damage: 20
+  fireRate: 1
   automatic: 1
   ammoCost: 10
-  noiseRadius: 1
+  noiseRadius: 2
   projectilePrefab: {fileID: 2186950268952709522, guid: fca6996b55c6139458c502145a64fee6, type: 3}

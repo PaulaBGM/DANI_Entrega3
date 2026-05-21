@@ -57,7 +57,7 @@ public class BulletController : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            var damageable = other.GetComponentInParent<IDamagable>();
+            var damageable = other.GetComponentInParent<IDamageable>();
             if (damageable != null)
             {
                 damageable.ApplyDamage(damage);

@@ -48,7 +48,7 @@ public class Grenade : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, damageRadius, damageLayerMask);
         foreach (Collider hit in hits)
         {
-            IDamagable damageable = hit.GetComponentInParent<IDamagable>();
+            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
             if (damageable != null)
             {
                 float distance = Vector3.Distance(transform.position, hit.transform.position);

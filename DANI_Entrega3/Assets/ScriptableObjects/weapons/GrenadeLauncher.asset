@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e61ddfefe45de1b41b4e1ab7e314ebaa, type: 3}
   m_Name: GrenadeLauncher
   m_EditorClassIdentifier: 
-  weaponType: 2
-  damage: 20
+  weaponType: 3
+  damage: 50
   fireRate: 4
   automatic: 1
   ammoCost: 10

@@ -26,6 +26,9 @@ public class PlayerAnimator : MonoBehaviour
     private static readonly int Movement =
         Animator.StringToHash("movement");
 
+    private static readonly int IsAiming =
+        Animator.StringToHash("combatMode");
+
     private float idleTimer;
 
     [SerializeField]
@@ -34,10 +37,8 @@ public class PlayerAnimator : MonoBehaviour
     private void Awake()
     {
         input = GetComponent<PlayerInputHandler>();
-
         motor = GetComponent<PlayerMotor>();
 
-        // Seguridad
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -47,10 +48,9 @@ public class PlayerAnimator : MonoBehaviour
     private void Update()
     {
         UpdateMovement();
-
         UpdateCrouch();
-
         UpdateLongIdle();
+        UpdateAim();
     }
 
     private void UpdateMovement()
@@ -120,6 +120,11 @@ public class PlayerAnimator : MonoBehaviour
         {
             animator.SetBool(LongIdle, true);
         }
+    }
+
+    private void UpdateAim()
+    {
+        animator.SetBool(IsAiming, input.AimPressed);
     }
 
     public void PlayJumpStart()

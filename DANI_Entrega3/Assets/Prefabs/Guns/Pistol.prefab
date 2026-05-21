@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc9a7d3b2fdaec7448151a2e5fe5416b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponType: 1
+  weaponType: 2
 --- !u!114 &7228242005749992161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,7 +86,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 03e9405486d87c54aa1e659163dd60f9, type: 2}
+  weaponType: 2
   shootPoint: {fileID: 0}
+  shootDistance: 100
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1001 &826827225280937619
 PrefabInstance:
   m_ObjectHideFlags: 0
