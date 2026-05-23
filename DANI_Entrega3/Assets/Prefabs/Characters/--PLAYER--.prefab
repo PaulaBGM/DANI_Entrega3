@@ -726,6 +726,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1386294531057530706, guid: d031a506946b06d409f004193857ab86, type: 3}
+      propertyPath: ammoSystem
+      value: 
+      objectReference: {fileID: 6137773773017741199}
+    - target: {fileID: 1386294531057530706, guid: d031a506946b06d409f004193857ab86, type: 3}
+      propertyPath: noiseEmitter
+      value: 
+      objectReference: {fileID: 704064904033280006}
+    - target: {fileID: 1386294531057530706, guid: d031a506946b06d409f004193857ab86, type: 3}
       propertyPath: hitMask.m_Bits
       value: 64
       objectReference: {fileID: 0}
@@ -1068,9 +1076,6 @@ PrefabInstance:
       addedObject: {fileID: 7466806204768448513}
     - targetCorrespondingSourceObject: {fileID: 5759747549297130254, guid: d031a506946b06d409f004193857ab86, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7678103898079591074}
-    - targetCorrespondingSourceObject: {fileID: 5759747549297130254, guid: d031a506946b06d409f004193857ab86, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 3342762573793421987}
     - targetCorrespondingSourceObject: {fileID: 5759747549297130254, guid: d031a506946b06d409f004193857ab86, type: 3}
       insertIndex: -1
@@ -1078,6 +1083,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5759747549297130254, guid: d031a506946b06d409f004193857ab86, type: 3}
       insertIndex: -1
       addedObject: {fileID: 704064904033280006}
+    - targetCorrespondingSourceObject: {fileID: 5488430734021089365, guid: d031a506946b06d409f004193857ab86, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6137773773017741199}
     - targetCorrespondingSourceObject: {fileID: 7959160275064935742, guid: d031a506946b06d409f004193857ab86, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6123211342217251638}
@@ -1124,6 +1132,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4946477747237577140, guid: d031a506946b06d409f004193857ab86, type: 3}
   m_PrefabInstance: {fileID: 6174120834004840072}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1838647890102957789 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5488430734021089365, guid: d031a506946b06d409f004193857ab86, type: 3}
+  m_PrefabInstance: {fileID: 6174120834004840072}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6137773773017741199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1838647890102957789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7d1dc12a60907740874408d9936ca12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventManager: {fileID: 11400000, guid: e6be14773093fb9439f281d4b0fe38fd, type: 2}
+  maxAmmoGun: 50
+  maxAmmoCluster: 5
 --- !u!1 &1891610588702463366 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5759747549297130254, guid: d031a506946b06d409f004193857ab86, type: 3}
@@ -1178,25 +1206,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 5182418001470149958}
   longIdleTime: 15
---- !u!114 &7678103898079591074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1891610588702463366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2252f5c12131ea4d954d411adfb4f83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 5182418001470149958}
-  pickupRadius: 1
-  weaponLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  pickupPoint: {fileID: 1228226379305848636}
-  pickupDelay: 1
 --- !u!114 &3342762573793421987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1216,7 +1225,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891610588702463366}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7d1dc12a60907740874408d9936ca12, type: 3}
   m_Name: 

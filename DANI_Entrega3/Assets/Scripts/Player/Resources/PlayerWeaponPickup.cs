@@ -117,8 +117,8 @@ public class PlayerWeaponPickup : MonoBehaviour
         yield return new WaitForSeconds(
             pickupDelay);
 
-        inventory.AddWeapon(
-            weapon.weaponType);
+        //inventory.AddWeapon(
+            //weapon.weaponType);
 
         Destroy(
             weapon.gameObject);

@@ -4,14 +4,15 @@ using UnityEngine.InputSystem;
 public class PlayerInputHandler : MonoBehaviour
 {
     public Vector2 MoveInput { get; private set; }
+
     public Vector2 LookInput { get; private set; }
 
     public bool ShootPressed { get; private set; }
+
     public bool AimPressed { get; private set; }
 
     public bool JumpPressed { get; private set; }
 
-    // NUEVO
     public bool RunPressed { get; private set; }
 
     public bool DashPressed { get; private set; }
@@ -19,9 +20,11 @@ public class PlayerInputHandler : MonoBehaviour
     public bool CrouchPressed { get; private set; }
 
     public bool InteractPressed { get; private set; }
+
     public bool InteractTriggered { get; private set; }
 
     public bool ScrollUpTriggered { get; private set; }
+
     public bool ScrollDownTriggered { get; private set; }
 
     private MyInputs inputActions;
@@ -35,30 +38,39 @@ public class PlayerInputHandler : MonoBehaviour
     {
         inputActions.Enable();
 
+        // MOVE
         inputActions.Player.Move.performed +=
-            ctx => MoveInput = ctx.ReadValue<Vector2>();
+            ctx => MoveInput =
+                ctx.ReadValue<Vector2>();
 
         inputActions.Player.Move.canceled +=
-            ctx => MoveInput = Vector2.zero;
+            ctx => MoveInput =
+                Vector2.zero;
 
+        // LOOK
         inputActions.Player.Look.performed +=
-            ctx => LookInput = ctx.ReadValue<Vector2>();
+            ctx => LookInput =
+                ctx.ReadValue<Vector2>();
 
         inputActions.Player.Look.canceled +=
-            ctx => LookInput = Vector2.zero;
+            ctx => LookInput =
+                Vector2.zero;
 
+        // SHOOT
         inputActions.Player.Shoot.performed +=
             ctx => ShootPressed = true;
 
         inputActions.Player.Shoot.canceled +=
             ctx => ShootPressed = false;
 
+        // AIM
         inputActions.Player.Aim.performed +=
             ctx => AimPressed = true;
 
         inputActions.Player.Aim.canceled +=
             ctx => AimPressed = false;
 
+        // JUMP
         inputActions.Player.Jump.performed +=
             ctx => JumpPressed = true;
 
@@ -66,11 +78,14 @@ public class PlayerInputHandler : MonoBehaviour
             ctx => JumpPressed = false;
 
         // RUN
-        inputActions.Player.Run.performed +=
-            ctx => RunPressed = true;
+        if (inputActions.Player.Run != null)
+        {
+            inputActions.Player.Run.performed +=
+                ctx => RunPressed = true;
 
-        inputActions.Player.Run.canceled +=
-            ctx => RunPressed = false;
+            inputActions.Player.Run.canceled +=
+                ctx => RunPressed = false;
+        }
 
         // DASH
         inputActions.Player.Dash.performed +=
@@ -79,12 +94,14 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.Dash.canceled +=
             ctx => DashPressed = false;
 
+        // CROUCH
         inputActions.Player.Crouch.performed +=
             ctx => CrouchPressed = true;
 
         inputActions.Player.Crouch.canceled +=
             ctx => CrouchPressed = false;
 
+        // INTERACT
         inputActions.Player.Interact.performed +=
             ctx =>
             {
@@ -99,6 +116,7 @@ public class PlayerInputHandler : MonoBehaviour
                 InteractPressed = false;
             };
 
+        // CHANGE WEAPON
         inputActions.Player.ChangeWeapon.performed +=
             ctx =>
             {

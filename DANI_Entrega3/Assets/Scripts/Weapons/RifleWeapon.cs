@@ -11,26 +11,61 @@ public class RifleWeapon : WeaponBase
     [SerializeField]
     private LayerMask hitMask;
 
-    private PlayerAmmoSystem ammoSystem;
+    [SerializeField] private PlayerAmmoSystem ammoSystem;
 
-    private NoiseEmitter noiseEmitter;
+    [SerializeField] private NoiseEmitter noiseEmitter;
 
-    private Camera mainCamera;
+    [SerializeField] private Camera mainCamera;
 
-    private void Awake()
+    private void OnEnable()
     {
-        ammoSystem =
-            GetComponentInParent<PlayerAmmoSystem>();
+        if (ammoSystem == null)
+        {
+            ammoSystem = GetComponentInParent<PlayerAmmoSystem>();
+        }
 
-        noiseEmitter =
-            GetComponentInParent<NoiseEmitter>();
+        if (noiseEmitter == null)
+        {
+            noiseEmitter =
+                GetComponentInParent<NoiseEmitter>();
+        }
 
-        mainCamera =
-            Camera.main;
+        if (mainCamera == null)
+        {
+            mainCamera =
+                Camera.main;
+        }
+
+        Debug.Log(
+            $"RIFLE ENABLED | ammo={ammoSystem} | noise={noiseEmitter}");
     }
 
     public override void Fire()
     {
+        if (ammoSystem == null)
+        {
+            Debug.LogError(
+                "AMMO SYSTEM NULL");
+
+            return;
+        }
+
+        if (noiseEmitter == null)
+        {
+            Debug.LogError(
+                "NOISE EMITTER NULL");
+
+            return;
+        }
+
+        if (mainCamera == null)
+        {
+            Debug.LogError(
+                "MAIN CAMERA NULL");
+
+            return;
+        }
+
         if (ammoSystem.CurrentAmmoGun <= 0)
             return;
 
@@ -45,10 +80,6 @@ public class RifleWeapon : WeaponBase
 
         ShootRaycast();
     }
-
-    // =========================
-    // HITSCAN
-    // =========================
 
     private void ShootRaycast()
     {
