@@ -10,7 +10,7 @@ public class SensorSystem : MonoBehaviour
     
     public event Action<Transform> OnPlayerDetected, OnPlayerLost;
     
-    [SerializeField] private Transform headTransform;       // referencia al hueso de la cabeza
+    [SerializeField] private Transform headTransform; // referencia al hueso de la cabeza
 
     private SphereCollider sensorCollider;
 
@@ -30,7 +30,7 @@ public class SensorSystem : MonoBehaviour
 
     private void CheckDetection(Collider other)
     {
-        Vector3 directionToTarget = (other.transform.position - transform.position).normalized;
+        Vector3 directionToTarget = (other.transform.position - headTransform.position).normalized;
         float distanceToTarget = Vector3.Distance(headTransform.position, other.transform.position);
 
         //Si hay un obstáculo en medio no es valida la detección.

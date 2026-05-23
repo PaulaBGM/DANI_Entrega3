@@ -1,5 +1,6 @@
 using DG.Tweening;
 using FSM.Enemy;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -43,8 +44,19 @@ public class ShootAttackState : States<EnemyController>, IEnemyAttack
             StopShooting(null);
             return;
         }
-        
-        Vector3 lookTarget = _controller.Target.position + Vector3.right * offSet;
+
+        float distance =
+            Vector3.Distance(_controller.transform.position, _controller.Target.position);
+
+        if (distance > attackDistance)
+        {
+            StopShooting(_controller.Target);
+            return;
+        }
+
+        Vector3 lookTarget =
+            _controller.Target.position + Vector3.right * offSet;
+
         transform.DOLookAt(lookTarget, smoothGaze, AxisConstraint.Y);
     }
 
@@ -80,8 +92,14 @@ public class ShootAttackState : States<EnemyController>, IEnemyAttack
     
     private void StopShooting(Transform player)
     {
+        if (_controller == null)
+            return;
+
         _controller.Animator.SetBool(Attacking, false);
-        gunGameObject.SetActive(false);
+
+        if (gunGameObject != null)
+            gunGameObject.SetActive(false);
+
         _controller.SetState(_controller.ChaseState);
     }
     
@@ -93,21 +111,35 @@ public class ShootAttackState : States<EnemyController>, IEnemyAttack
     // Método que dispara la bala
     private void OnShootAttack()
     {
-        var bullet = bulletPool.Get();
-        AudioManager.Instance.PlaySFX(AudioManager.Instance.audioLibrary.enemyShootSfx);
-        Vector3 targetDirection = (_controller.Target.position - firePoint.position).normalized;
-        
-        if (!bullet.IsActive)
-        {
+        if (_controller == null || _controller.Target == null || firePoint == null)
             return;
-        }
-        
+
+        if (bulletPool == null)
+            return;
+
+        var bullet = bulletPool.Get();
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.audioLibrary.enemyShootSfx);
+
+        Vector3 targetDirection =
+            (_controller.Target.position - firePoint.position).normalized;
+
+        if (!bullet.IsActive)
+            return;
+
         bullet.Shoot(targetDirection);
     }
 
     private void ShootAttackFinished()
     {
-        float distance = Vector3.Distance(_controller.transform.position, _controller.Target.position);
+        if (_controller == null || _controller.Target == null)
+            return;
+
+        float distance =
+            Vector3.Distance(_controller.transform.position,
+                _controller.Target.position);
+
         if (distance > attackDistance)
         {
             gunGameObject.SetActive(false);
