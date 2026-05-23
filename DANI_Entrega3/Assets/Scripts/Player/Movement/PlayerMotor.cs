@@ -72,19 +72,16 @@ public class PlayerMotor : MonoBehaviour
             transform.right * moveInput.x +
             transform.forward * moveInput.y;
 
-        float currentSpeed;
+        float currentSpeed = walkSpeed;
 
+        // NO correr mientras está agachado
         if (isCrouching)
         {
             currentSpeed = crouchSpeed;
         }
-        else if (input.DashPressed)
+        else if (input.RunPressed)
         {
             currentSpeed = runSpeed;
-        }
-        else
-        {
-            currentSpeed = walkSpeed;
         }
 
         bool grounded = controller.isGrounded;
@@ -112,9 +109,12 @@ public class PlayerMotor : MonoBehaviour
 
         finalMove.y = velocity.y;
 
-        controller.Move(
-            finalMove * Time.deltaTime);
-
+        // NO mover normalmente durante dash
+        if (!isDashing)
+        {
+            controller.Move(
+                finalMove * Time.deltaTime);
+        }
     }
 
     private void HandleJump()
@@ -134,8 +134,10 @@ public class PlayerMotor : MonoBehaviour
 
     private void HandleDash()
     {
+        // NO dash mientras está agachado
         if (input.DashPressed &&
-            !isDashing)
+            !isDashing &&
+            !isCrouching)
         {
             Debug.Log("DASH START");
 
@@ -230,6 +232,5 @@ public class PlayerMotor : MonoBehaviour
     public bool IsCrouching =>
         isCrouching;
 
-    public bool IsRunning =>
-        input.DashPressed;
+    public bool IsRunning => input.RunPressed && !isCrouching;
 }

@@ -5,15 +5,25 @@ public class PlayerInputHandler : MonoBehaviour
 {
     public Vector2 MoveInput { get; private set; }
     public Vector2 LookInput { get; private set; }
+
     public bool ShootPressed { get; private set; }
     public bool AimPressed { get; private set; }
+
     public bool JumpPressed { get; private set; }
+
+    // NUEVO
+    public bool RunPressed { get; private set; }
+
     public bool DashPressed { get; private set; }
+
     public bool CrouchPressed { get; private set; }
+
     public bool InteractPressed { get; private set; }
     public bool InteractTriggered { get; private set; }
+
     public bool ScrollUpTriggered { get; private set; }
     public bool ScrollDownTriggered { get; private set; }
+
     private MyInputs inputActions;
 
     private void Awake()
@@ -55,6 +65,14 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.Jump.canceled +=
             ctx => JumpPressed = false;
 
+        // RUN
+        inputActions.Player.Run.performed +=
+            ctx => RunPressed = true;
+
+        inputActions.Player.Run.canceled +=
+            ctx => RunPressed = false;
+
+        // DASH
         inputActions.Player.Dash.performed +=
             ctx => DashPressed = true;
 
@@ -70,7 +88,6 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.Interact.performed +=
             ctx =>
             {
-
                 InteractPressed = true;
 
                 InteractTriggered = true;
@@ -85,7 +102,8 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.ChangeWeapon.performed +=
             ctx =>
             {
-                Vector2 scroll = ctx.ReadValue<Vector2>();
+                Vector2 scroll =
+                    ctx.ReadValue<Vector2>();
 
                 if (scroll.y > 0)
                 {
@@ -110,7 +128,6 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnDisable()
     {
-
         inputActions.Disable();
     }
 }
