@@ -137,9 +137,6 @@ public class PlayerInventory : MonoBehaviour
 
         UpdateAnimator(
             CurrentWeapon.weaponType);
-
-        Debug.Log(
-            $"EQUIPPED: {CurrentWeapon.weaponType}");
     }
 
     // =========================

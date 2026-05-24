@@ -94,8 +94,6 @@ public class PlayerMotor : MonoBehaviour
         // LANDING DETECTION
         if (!wasGrounded && grounded)
         {
-            Debug.Log("LANDED");
-
             playerAnimator.PlayLanding();
         }
 

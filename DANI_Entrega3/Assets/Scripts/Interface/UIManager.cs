@@ -95,9 +95,6 @@ public class UIManager : MonoBehaviour
         IsDialogueActive = true;
 
         Time.timeScale = 0f;
-
-        Debug.Log(
-            "INITIAL DIALOGUE STARTED");
     }
 
     // =========================
@@ -106,9 +103,6 @@ public class UIManager : MonoBehaviour
 
     public void ShowFinalDialogue()
     {
-        Debug.Log(
-            "SHOW FINAL DIALOGUE");
-
         showMissionCompletePanel = true;
 
         OnDialogueEnded();
@@ -137,9 +131,6 @@ public class UIManager : MonoBehaviour
 
     public void OnDialogueEnded()
     {
-        Debug.Log(
-            "ON DIALOGUE ENDED");
-
         IsDialogueActive = false;
 
         // =========================

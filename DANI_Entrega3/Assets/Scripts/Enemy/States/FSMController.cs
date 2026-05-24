@@ -15,6 +15,8 @@ public class FSMController<T> : MonoBehaviour where T : FSMController<T> //Le in
 
     public void SetState(States<T> newState) //Comprueba si hay un estado anterior y lo actualiza.
     {
+        Debug.Log($"STATE CHANGE: {currentState} -> {newState}");
+
         if (currentState)
         {
             currentState.OnExit();
