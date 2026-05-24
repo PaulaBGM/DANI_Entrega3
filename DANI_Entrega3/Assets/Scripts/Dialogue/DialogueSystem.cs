@@ -6,6 +6,10 @@ public class DialogueSystem : MonoBehaviour
 {
     private DialogueManagerSo dialogue;
 
+    [Header("UI")]
+    [SerializeField]
+    private GameObject dialoguePanel;
+
     [SerializeField]
     private TextMeshProUGUI speakerNameText;
 
@@ -15,19 +19,28 @@ public class DialogueSystem : MonoBehaviour
     [SerializeField]
     private GameObject imageBriefcase;
 
+    [Header("Dialogue Settings")]
     [SerializeField]
     private int lineToShowImage = 1;
 
     [SerializeField]
     private float typingSpeed = 0.05f;
 
-    private int currentLine = 0;
+    private int currentLine;
 
-    private bool isTyping = false;
+    private bool isTyping;
 
-    private bool isActive = false;
+    private bool isActive;
+
+    private bool interactionConsumed;
+
+    private bool canContinue;
 
     private PlayerInputHandler input;
+
+    // =========================
+    // UNITY
+    // =========================
 
     private void Awake()
     {
@@ -37,7 +50,15 @@ public class DialogueSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        imageBriefcase.SetActive(false);
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(true);
+        }
+
+        if (imageBriefcase != null)
+        {
+            imageBriefcase.SetActive(false);
+        }
     }
 
     private void Update()
@@ -45,21 +66,67 @@ public class DialogueSystem : MonoBehaviour
         if (!isActive)
             return;
 
-        if (input != null &&
-            input.InteractTriggered)
+        if (input == null)
+            return;
+
+        if (canContinue &&
+            input.InteractPressed &&
+            !interactionConsumed)
         {
+            interactionConsumed = true;
+
             ContinueDialogue();
+        }
+
+        if (!input.InteractPressed)
+        {
+            interactionConsumed = false;
         }
     }
 
+    // =========================
+    // START DIALOGUE
+    // =========================
+
     public void StartDialogue()
     {
+        if (dialogue == null)
+        {
+            Debug.LogWarning(
+                "NO DIALOGUE ASSIGNED");
+
+            return;
+        }
+
         currentLine = 0;
 
         isActive = true;
 
-        StartCoroutine(ShowLine());
+        canContinue = false;
+
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(true);
+        }
+
+        StartCoroutine(
+            EnableContinueRoutine());
+
+        StartCoroutine(
+            ShowLine());
     }
+
+    private IEnumerator EnableContinueRoutine()
+    {
+        yield return new WaitForSecondsRealtime(
+            0.2f);
+
+        canContinue = true;
+    }
+
+    // =========================
+    // SET DIALOGUE
+    // =========================
 
     public void SetDialogue(
         DialogueManagerSo newDialogue)
@@ -67,10 +134,18 @@ public class DialogueSystem : MonoBehaviour
         dialogue = newDialogue;
     }
 
+    // =========================
+    // CONTINUE
+    // =========================
+
     private void ContinueDialogue()
     {
         if (!isActive)
             return;
+
+        // =========================
+        // SKIP TYPING
+        // =========================
 
         if (isTyping)
         {
@@ -82,22 +157,37 @@ public class DialogueSystem : MonoBehaviour
             isTyping = false;
 
             ShowVisualForCurrentLine();
+
+            StartCoroutine(
+                EnableContinueRoutine());
+
+            return;
+        }
+
+        // =========================
+        // NEXT LINE
+        // =========================
+
+        currentLine++;
+
+        Debug.Log(
+            $"NEXT LINE: {currentLine}");
+
+        if (currentLine <
+            dialogue.dialogueLines.Length)
+        {
+            StartCoroutine(
+                ShowLine());
         }
         else
         {
-            currentLine++;
-
-            if (currentLine <
-                dialogue.dialogueLines.Length)
-            {
-                StartCoroutine(ShowLine());
-            }
-            else
-            {
-                EndDialogue();
-            }
+            EndDialogue();
         }
     }
+
+    // =========================
+    // SHOW LINE
+    // =========================
 
     private IEnumerator ShowLine()
     {
@@ -108,8 +198,13 @@ public class DialogueSystem : MonoBehaviour
         speakerNameText.text =
             dialogue.dialogueLines[currentLine].speakerName;
 
-        foreach (char character in
-                 dialogue.dialogueLines[currentLine].lineText)
+        string line =
+            dialogue.dialogueLines[currentLine].lineText;
+
+        Debug.Log(
+            $"SHOWING LINE: {line}");
+
+        foreach (char character in line)
         {
             dialogueText.text += character;
 
@@ -122,6 +217,10 @@ public class DialogueSystem : MonoBehaviour
         ShowVisualForCurrentLine();
     }
 
+    // =========================
+    // VISUALS
+    // =========================
+
     private void ShowVisualForCurrentLine()
     {
         if (imageBriefcase != null)
@@ -131,9 +230,25 @@ public class DialogueSystem : MonoBehaviour
         }
     }
 
+    // =========================
+    // END DIALOGUE
+    // =========================
+
     private void EndDialogue()
     {
+        Debug.Log(
+            "DIALOGUE FINISHED");
+
         isActive = false;
+
+        // APAGA EL PANEL VISUAL
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
+
+        // APAGA EL OBJETO DEL SISTEMA
+        gameObject.SetActive(false);
 
         UIManager.Instance.OnDialogueEnded();
     }

@@ -1,138 +1,204 @@
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
-    public bool IsDialogueActive { get; private set; } = false;
 
-    [Header("Dialogue Panel")]
-    [SerializeField] private DialogueManagerSo _initialDialogue;
-    [SerializeField] private DialogueManagerSo _finalDialogue;
-    [SerializeField] private DialogueSystem dialogueSystem;
+    public bool IsDialogueActive
+    {
+        get;
+        private set;
+    }
+
+    [Header("Dialogue")]
+    [SerializeField]
+    private DialogueManagerSo initialDialogue;
+
+    [SerializeField]
+    private DialogueSystem dialogueSystem;
 
     [Header("HUD")]
-    [SerializeField] private GameObject hudInstance;
-    [SerializeField] private float panelDuration;
-    
-    [Header("Finals")]
-    [SerializeField] private GameObject missionCompletePanel;
-    [SerializeField] private GameObject missionFailedPanel;
+    [SerializeField]
+    private GameObject hudInstance;
 
-    private bool showMissionCompletePanel = false;
+    [Header("Final Panels")]
+    [SerializeField]
+    private GameObject missionCompletePanel;
+
+    [SerializeField]
+    private GameObject missionFailedPanel;
+
+    private bool showMissionCompletePanel;
+
+    // =========================
+    // UNITY
+    // =========================
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+
+            DontDestroyOnLoad(
+                gameObject);
         }
         else
         {
             Destroy(gameObject);
+
             return;
         }
     }
 
     private void Start()
     {
-        hudInstance.SetActive(false);
-        dialogueSystem.gameObject.SetActive(false);
+        if (hudInstance != null)
+        {
+            hudInstance.SetActive(false);
+        }
 
-        // Estado inicial: mostrar HUD, ocultar diálogo
+        if (missionCompletePanel != null)
+        {
+            missionCompletePanel.SetActive(false);
+        }
+
+        if (missionFailedPanel != null)
+        {
+            missionFailedPanel.SetActive(false);
+        }
+
         ShowInitialDialogue();
     }
 
+    // =========================
+    // INITIAL DIALOGUE
+    // =========================
+
     public void ShowInitialDialogue()
     {
+        if (dialogueSystem == null)
+            return;
+
         if (hudInstance != null)
-            hudInstance.SetActive(false);
-
-        if (dialogueSystem.gameObject != null)
         {
-            dialogueSystem.SetDialogue(_initialDialogue);
-
-            dialogueSystem.gameObject.SetActive(true);
-            dialogueSystem?.StartDialogue(); // Inicia el diálogo manualmente
-            
-            IsDialogueActive = true;
-            
-            // Pausar la escena
-            Time.timeScale = 0f;
+            hudInstance.SetActive(false);
         }
+
+        dialogueSystem.gameObject.SetActive(true);
+
+        dialogueSystem.SetDialogue(
+            initialDialogue);
+
+        dialogueSystem.StartDialogue();
+
+        IsDialogueActive = true;
+
+        Time.timeScale = 0f;
+
+        Debug.Log(
+            "INITIAL DIALOGUE STARTED");
     }
+
+    // =========================
+    // FINAL DIALOGUE
+    // =========================
+
+    public void ShowFinalDialogue()
+    {
+        Debug.Log(
+            "SHOW FINAL DIALOGUE");
+
+        showMissionCompletePanel = true;
+
+        OnDialogueEnded();
+    }
+
+    // =========================
+    // SHOW HUD
+    // =========================
 
     public void ShowHUD()
     {
         if (hudInstance != null)
+        {
             hudInstance.SetActive(true);
+        }
 
-        if (dialogueSystem.gameObject != null)
+        if (dialogueSystem != null)
+        {
             dialogueSystem.gameObject.SetActive(false);
+        }
     }
 
-    // Muestra el diálogo final
-    public void ShowFinalDialogue()
+    // =========================
+    // DIALOGUE ENDED
+    // =========================
+
+    public void OnDialogueEnded()
     {
-        hudInstance?.SetActive(false);
-        dialogueSystem.gameObject.SetActive(true);
+        Debug.Log(
+            "ON DIALOGUE ENDED");
 
-        // Le pasamos el nuevo diálogo al sistema
-        dialogueSystem.SetDialogue(_finalDialogue);
+        IsDialogueActive = false;
 
-        IsDialogueActive = true;
-        showMissionCompletePanel = true; // marcar que después viene la victoria
+        // =========================
+        // FINAL FLOW
+        // =========================
 
-        Time.timeScale = 0f;
-        dialogueSystem.StartDialogue();
+        if (showMissionCompletePanel)
+        {
+            if (missionCompletePanel != null)
+            {
+                missionCompletePanel.SetActive(true);
+            }
+
+            Cursor.lockState =
+                CursorLockMode.None;
+
+            Cursor.visible = true;
+
+            return;
+        }
+
+        // =========================
+        // NORMAL FLOW
+        // =========================
+
+        ShowHUD();
+
+        Time.timeScale = 1f;
     }
-    
-    public void ShowMissionComplete()
-    {
-        dialogueSystem.gameObject?.SetActive(false);
 
-        StartCoroutine(ShowPanelForSeconds(missionCompletePanel));
-    }
+    // =========================
+    // MISSION FAILED
+    // =========================
 
     public void ShowMissionFailed()
     {
-        hudInstance?.SetActive(false);
-        dialogueSystem.gameObject?.SetActive(false);
+        Debug.Log(
+            "MISSION FAILED");
 
-        StartCoroutine(ShowPanelForSeconds(missionFailedPanel));
-    }
-    
-    private IEnumerator ShowPanelForSeconds(GameObject panel)
-    {
-        // Pausar la escena
+        if (hudInstance != null)
+        {
+            hudInstance.SetActive(false);
+        }
+
+        if (dialogueSystem != null)
+        {
+            dialogueSystem.gameObject.SetActive(false);
+        }
+
+        if (missionFailedPanel != null)
+        {
+            missionFailedPanel.SetActive(true);
+        }
+
+        Cursor.lockState =
+            CursorLockMode.None;
+
+        Cursor.visible = true;
+
         Time.timeScale = 0f;
-        
-        panel?.SetActive(true);
-        yield return new WaitForSecondsRealtime(panelDuration);
-        panel?.SetActive(false);
-        Cursor.lockState = CursorLockMode.None; //Bloquea el cursor
-
-        SceneFlowManager.Instance.LoadMainMenu();
-    }
-    
-    // Este método será llamado por el DialogueSystem al terminar el diálogo
-    public void OnDialogueEnded()
-    {
-        ShowHUD();
-        
-        IsDialogueActive = false;
-        
-        if (showMissionCompletePanel)
-        {
-            showMissionCompletePanel = false;
-            ShowMissionComplete(); // ahora muestra la victoria tras el diálogo
-        }
-        else
-        {
-            ShowHUD();
-            Time.timeScale = 1f;
-        }
     }
 }

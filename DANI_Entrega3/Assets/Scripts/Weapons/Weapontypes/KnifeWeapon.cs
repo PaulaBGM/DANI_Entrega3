@@ -38,36 +38,19 @@ public class KnifeWeapon : WeaponBase
             range,
             enemyLayer))
         {
-            Debug.Log(
-                $"KNIFE HIT: {hit.collider.name}");
-
-            Debug.Log(
-                $"HIT OBJECT LAYER: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+           
 
             IDamageable damageable =
                 hit.collider.GetComponentInParent<IDamageable>();
 
             if (damageable != null)
             {
-                Debug.Log(
-                    "IDAMAGEABLE FOUND");
 
                 damageable.ApplyDamage(
                     data.damage);
+            }
 
-                Debug.Log(
-                    $"KNIFE DAMAGE APPLIED: {data.damage}");
-            }
-            else
-            {
-                Debug.LogError(
-                    $"NO IDAMAGEABLE FOUND ON: {hit.collider.name}");
-            }
         }
-        else
-        {
-            Debug.LogError(
-                "KNIFE RAYCAST MISSED");
-        }
+
     }
 }

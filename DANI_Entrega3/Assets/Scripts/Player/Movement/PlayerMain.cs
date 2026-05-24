@@ -61,7 +61,11 @@ public class PlayerMain : MonoBehaviour
 
     public void PlayerNotifiesBriefCase()
     {
+        Debug.Log(
+            "BRIEFCASE COLLECTED");
+
         OnBriefCaseGetted?.Invoke();
+
         UIManager.Instance.ShowFinalDialogue();
     }
 
