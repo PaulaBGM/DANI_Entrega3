@@ -38,11 +38,11 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        //hudInstance.SetActive(false);
+        hudInstance.SetActive(false);
         dialogueSystem.gameObject.SetActive(false);
 
         // Estado inicial: mostrar HUD, ocultar diálogo
-       // ShowInitialDialogue();
+        ShowInitialDialogue();
     }
 
     public void ShowInitialDialogue()
@@ -127,7 +127,7 @@ public class UIManager : MonoBehaviour
         if (showMissionCompletePanel)
         {
             showMissionCompletePanel = false;
-            ShowMissionComplete(); // 👈 ahora muestra la victoria tras el diálogo
+            ShowMissionComplete(); // ahora muestra la victoria tras el diálogo
         }
         else
         {

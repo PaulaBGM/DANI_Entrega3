@@ -11,46 +11,110 @@ public class AttackState : States<EnemyController>, IEnemyAttack
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackRadius = 1f;
     [SerializeField] private int damage = 15;
-    
+
+    private Tween lookTween;
+
     public override void OnEnter()
     {
-        
+        _controller.Agent.isStopped = true;
+        _controller.Animator.SetBool(Attacking, true);
+
+        if (_controller.Target != null)
+        {
+            lookTween = transform.DOLookAt(
+                _controller.Target.position,
+                smoothGaze,
+                AxisConstraint.Y
+            );
+        }
     }
 
     public override void OnUpdate()
     {
-        _controller.Agent.isStopped = true;
-        _controller.Animator.SetBool(Attacking, true);
-        
-        transform.DOLookAt(_controller.Target.transform.position, smoothGaze, AxisConstraint.Y);
+        // Si pierde el target durante el ataque
+        if (_controller.Target == null)
+        {
+            ExitAttack();
+            return;
+        }
+
+        // Si el target se aleja demasiado
+        if (Vector3.Distance(transform.position, _controller.Target.position) > attackDistance)
+        {
+            ExitAttack();
+        }
     }
-    
-    public void OnAttack(Transform target) //Se llama mediante un evento de animación
+
+    // Se llama mediante Animation Event
+    public void OnAttack(Transform target)
     {
-        Collider[] colliders = Physics.OverlapSphere(attackPoint.position, attackRadius);
+        if (attackPoint == null)
+        {
+            Debug.LogError("Attack Point no asignado en AttackState");
+            return;
+        }
+
+        Collider[] colliders = Physics.OverlapSphere(
+            attackPoint.position,
+            attackRadius
+        );
 
         foreach (Collider coll in colliders)
         {
-            if(coll.TryGetComponent(out PlayerHealthSystem playerHealth))
+            if (coll.TryGetComponent(out PlayerHealthSystem playerHealth))
             {
                 playerHealth.ApplyDamage(damage);
-                AudioManager.Instance.PlaySFX(AudioManager.Instance.audioLibrary.punchSfx);
+
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySFX(
+                        AudioManager.Instance.audioLibrary.punchSfx
+                    );
+                }
             }
         }
     }
-    
-    private void AttackFinished() //Se llama mediante un evento de animación y comprueba la distancia al finalizar el ataque
+
+    // Se llama mediante Animation Event
+    private void AttackFinished()
     {
+        if (_controller.Target == null)
+        {
+            ExitAttack();
+            return;
+        }
+
         if (Vector3.Distance(transform.position, _controller.Target.position) > attackDistance)
         {
-            _controller.Animator.SetBool(Attacking, false);
-            _controller.Agent.isStopped = false;
+            ExitAttack();
+        }
+    }
+
+    private void ExitAttack()
+    {
+        _controller.Animator.SetBool(Attacking, false);
+        _controller.Agent.isStopped = false;
+
+        if (_controller.ChaseState != null)
+        {
             _controller.SetState(_controller.ChaseState);
         }
     }
-    
+
     public override void OnExit()
     {
-        
+        if (lookTween != null && lookTween.IsActive())
+        {
+            lookTween.Kill();
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
 }

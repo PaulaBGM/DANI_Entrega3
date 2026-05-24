@@ -562,7 +562,7 @@ public partial class @MyInputs: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""1444639c-5e51-408d-8fbb-a86fbea6f703"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
