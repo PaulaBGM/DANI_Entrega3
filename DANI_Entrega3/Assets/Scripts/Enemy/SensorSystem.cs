@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class SensorSystem : MonoBehaviour
@@ -7,70 +6,83 @@ public class SensorSystem : MonoBehaviour
     [SerializeField] private float sensorDistance = 9f;
     [SerializeField] private float sensorAngle = 65f;
     [SerializeField] private LayerMask obstaclesMask;
-    
-    public event Action<Transform> OnPlayerDetected, OnPlayerLost;
-    
-    [SerializeField] private Transform headTransform; // referencia al hueso de la cabeza
+    [SerializeField] private Transform headTransform;
 
-    private SphereCollider sensorCollider;
+    public event Action<Transform> OnPlayerDetected;
+    public event Action<Transform> OnPlayerLost;
+
+    private Transform currentTarget;
+    private bool hasLOS;
 
     private void Awake()
     {
-        sensorCollider = GetComponent<SphereCollider>();
-        sensorCollider.radius = sensorDistance;
+        var col = GetComponent<SphereCollider>();
+        col.radius = sensorDistance;
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            CheckDetection(other);
-        }
+        if (!other.CompareTag("Player")) return;
+
+        CheckVision(other.transform);
     }
 
-    private void CheckDetection(Collider other)
+    private void CheckVision(Transform target)
     {
-        Vector3 directionToTarget = (other.transform.position - headTransform.position).normalized;
-        float distanceToTarget = Vector3.Distance(headTransform.position, other.transform.position);
+        Vector3 dir = (target.position - headTransform.position).normalized;
+        float distance = Vector3.Distance(headTransform.position, target.position);
 
-        //Si hay un obstáculo en medio no es valida la detección.
-        if(Physics.Raycast(headTransform.position, directionToTarget, distanceToTarget, obstaclesMask)) return;
-        
-        //Revisa el ángulo de visión
-        float angleToTarget = Vector3.Angle(headTransform.forward, directionToTarget);
+        if (distance > sensorDistance)
+            return;
 
-        if (angleToTarget < sensorAngle / 2f && distanceToTarget <= sensorDistance)
+        float angle = Vector3.Angle(headTransform.forward, dir);
+        if (angle > sensorAngle * 0.5f)
+            return;
+
+        bool blocked = Physics.Raycast(
+            headTransform.position,
+            dir,
+            distance,
+            obstaclesMask
+        );
+
+        if (blocked)
         {
-            OnPlayerDetected?.Invoke(other.transform);
+            SetLost(target);
+            return;
         }
-        else  OnPlayerLost?.Invoke(other.transform);
+
+        SetDetected(target);
+    }
+
+    private void SetDetected(Transform target)
+    {
+        if (currentTarget != target)
+        {
+            currentTarget = target;
+            OnPlayerDetected?.Invoke(target);
+        }
+
+        hasLOS = true;
+    }
+
+    private void SetLost(Transform target)
+    {
+        if (!hasLOS) return;
+
+        hasLOS = false;
+        currentTarget = null;
+
+        OnPlayerLost?.Invoke(target);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (!other.CompareTag("Player")) return;
+
+        if (currentTarget == other.transform)
         {
-            OnPlayerLost?.Invoke(other.transform);
+            SetLost(other.transform);
         }
-    }
-    
-    // Dibujo de rayos para depuración visual
-    private void OnDrawGizmosSelected()
-    {
-        if (headTransform == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(headTransform.position, sensorDistance);
-
-        // Dibuja el cono de visión de la cabeza
-        Vector3 forward = headTransform.forward * sensorDistance;
-        Quaternion leftRayRotation = Quaternion.AngleAxis(-sensorAngle / 2, Vector3.up);
-        Quaternion rightRayRotation = Quaternion.AngleAxis(sensorAngle / 2, Vector3.up);
-        Vector3 leftRayDirection = leftRayRotation * forward;
-        Vector3 rightRayDirection = rightRayRotation * forward;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(headTransform.position, leftRayDirection);
-        Gizmos.DrawRay(headTransform.position, rightRayDirection);
     }
 }

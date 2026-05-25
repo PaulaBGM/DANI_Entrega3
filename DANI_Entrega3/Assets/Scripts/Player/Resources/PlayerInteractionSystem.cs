@@ -104,14 +104,9 @@ public class PlayerInteractionSystem :
             currentInteractable
                 ?.OnInteractableDeactivated();
 
-            currentInteractable =
-                closest;
+            currentInteractable = closest;
 
-            currentInteractable
-                ?.OnInteractableActivated();
-
-            Debug.Log(
-                $"INTERACTABLE FOUND: {closest}");
+            currentInteractable?.OnInteractableActivated();
         }
     }
 

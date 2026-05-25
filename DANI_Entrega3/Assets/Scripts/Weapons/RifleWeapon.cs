@@ -35,9 +35,6 @@ public class RifleWeapon : WeaponBase
             mainCamera =
                 Camera.main;
         }
-
-        Debug.Log(
-            $"RIFLE ENABLED | ammo={ammoSystem} | noise={noiseEmitter}");
     }
 
     public override void Fire()

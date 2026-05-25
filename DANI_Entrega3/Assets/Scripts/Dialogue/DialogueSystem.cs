@@ -170,9 +170,6 @@ public class DialogueSystem : MonoBehaviour
 
         currentLine++;
 
-        Debug.Log(
-            $"NEXT LINE: {currentLine}");
-
         if (currentLine <
             dialogue.dialogueLines.Length)
         {
@@ -195,14 +192,9 @@ public class DialogueSystem : MonoBehaviour
 
         dialogueText.text = "";
 
-        speakerNameText.text =
-            dialogue.dialogueLines[currentLine].speakerName;
+        speakerNameText.text = dialogue.dialogueLines[currentLine].speakerName;
 
-        string line =
-            dialogue.dialogueLines[currentLine].lineText;
-
-        Debug.Log(
-            $"SHOWING LINE: {line}");
+        string line = dialogue.dialogueLines[currentLine].lineText;
 
         foreach (char character in line)
         {
@@ -236,9 +228,6 @@ public class DialogueSystem : MonoBehaviour
 
     private void EndDialogue()
     {
-        Debug.Log(
-            "DIALOGUE FINISHED");
-
         isActive = false;
 
         // APAGA EL PANEL VISUAL

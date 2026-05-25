@@ -248,7 +248,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 150
+  m_VersionIndex: 156
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -473,6 +473,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6904677881665950995, guid: 767196571c5b8614d9eae8ecd30a7131, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.91
+      objectReference: {fileID: 0}
     - target: {fileID: 7714747003383090728, guid: 767196571c5b8614d9eae8ecd30a7131, type: 3}
       propertyPath: m_text
       value: 3
@@ -480,6 +484,14 @@ PrefabInstance:
     - target: {fileID: 8130154460409490219, guid: 767196571c5b8614d9eae8ecd30a7131, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082172274112175153, guid: 767196571c5b8614d9eae8ecd30a7131, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082172274112175153, guid: 767196571c5b8614d9eae8ecd30a7131, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
